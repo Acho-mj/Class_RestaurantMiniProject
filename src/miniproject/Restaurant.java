@@ -17,4 +17,5 @@ public class Restaurant {
     public Menu[] getMenuList() {
         return menuList;
     }
+    
 }

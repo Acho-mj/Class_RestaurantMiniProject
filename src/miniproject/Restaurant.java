@@ -34,7 +34,6 @@ public class Restaurant {
                 index++;
             }
         }
-
         // 재배열된 메뉴 목록 반환
         return sortedMenuList;
     }
@@ -52,7 +51,6 @@ public class Restaurant {
                 return true; // 메뉴 추가 성공
             }
         }
-
         return false; // 더 이상 메뉴를 추가할 수 없음
     }
 

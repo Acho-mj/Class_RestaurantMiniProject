@@ -6,11 +6,15 @@ public class Main {
 	public static void main(String[] args) {
 		Restaurant restaurant = new Restaurant();
         Scanner sc = new Scanner(System.in);
-        Table table = new Table();
+        Table[] tables = new Table[5]; // 테이블 개수를 5개로 가정
+        
+        for (int i = 0; i < tables.length; i++) {
+        	tables[i] = new Table(i + 1); // 테이블 번호는 1부터 시작
+        }
 
         System.out.println("<< 음식점 주문 시스템 >>");
         while (true) {
-            System.out.println("=== 메뉴 목록 ===");
+            System.out.println("\n=== 메뉴 목록 ===");
             Menu[] menuList = restaurant.getMenuList();
             
             for (int i = 0; i < menuList.length; i++) {
@@ -32,6 +36,8 @@ public class Main {
                 System.out.println("프로그램을 종료합니다.");
                 sc.close();
                 return;
+                
+            // 메뉴 추가
             case 1:
                 System.out.print("추가할 메뉴의 이름을 입력하세요: ");
                 String name = sc.next();
@@ -45,6 +51,8 @@ public class Main {
                     System.out.println("이미 존재하는 메뉴입니다.\n");
                 }
                 break;
+            
+            //메뉴 삭제 
             case 2:
             	System.out.print("삭제할 메뉴의 번호를 입력하세요: ");
                 int menuNumber = sc.nextInt();
@@ -55,60 +63,76 @@ public class Main {
                     System.out.println("유효하지 않은 메뉴 번호입니다.\n");
                 }
                 break;           
+            
+            // 테이블 번호 + 주문
             case 3:
-            	System.out.print("주문할 메뉴 번호를 입력하세요 (종료하려면 0 입력): ");
-                int orderChoice = sc.nextInt();
-                if (orderChoice == 0) {
-                    break;
-                } else if (orderChoice >= 1 && orderChoice <= menuList.length) {
-                    System.out.print("수량을 입력하세요: ");
-                    int num = sc.nextInt();
-                    Menu menuChoice = menuList[orderChoice - 1];
+            	System.out.println("\n=== 사용 가능한 테이블 목록 ===");
+            	Table.showAvailableTables(tables);
+            	System.out.print("주문할 테이블 번호를 선택하세요: ");
+            	int tableNumber = sc.nextInt();
+            	
+            	if (tableNumber >= 1 && tableNumber <= tables.length) {
+            		Table selectedTable = tables[tableNumber - 1];
+            	
+            		while (true) {
+            			System.out.print("주문할 메뉴 번호를 입력하세요 (종료하려면 0 입력): ");
+            			int orderChoice = sc.nextInt();
+            			if (orderChoice == 0) {
+            				break;
+            			} else if (orderChoice >= 1 && orderChoice <= menuList.length) {
+            				System.out.print("수량을 입력하세요: ");
+            				int num = sc.nextInt();
+            				Menu menuChoice = menuList[orderChoice - 1];
 
-                    if (menuChoice != null) {
-                        for (int i = 0; i < num; i++) {
-                            table.addOrder(menuChoice);
-                        }
+            				if (menuChoice != null) {
+            					for (int i = 0; i < num; i++) {
+            						selectedTable.addOrder(menuChoice);
+            					}
 
-                        System.out.println(menuChoice.getName() + " " + num + "개가 주문되었습니다.\n");
-                    } else {
-                        System.out.println("유효하지 않은 선택입니다. 다시 선택하세요.");
-                    }
-                } else {
-                    System.out.println("유효하지 않은 선택입니다. 다시 선택하세요.");
-                }
-                System.out.println("\n == 주문 내역 ==");
-                Menu[] orderList = table.getOrderList();
+            					System.out.println(menuChoice.getName() + " " + num + "개가 주문되었습니다.\n");
+            				} else {
+            					System.out.println("유효하지 않은 선택입니다. 다시 선택하세요.");
+            				}
+            			} else {
+            				System.out.println("유효하지 않은 선택입니다. 다시 선택하세요.");
+            			}
+            		}
+            	
+            		System.out.println("\n == 주문 내역 ==");
+            		Menu[] orderList = selectedTable.getOrderList();
 
-                // 주문된 메뉴의 개수를 저장하기 위한 배열
-                int[] menuCounts = new int[orderList.length];
+            		// 주문된 메뉴의 개수를 저장하기 위한 배열
+            		int[] menuCounts = new int[orderList.length];
 
-                // 각 메뉴별로 주문된 개수를 카운트
-                for (int i = 0; i < orderList.length; i++) {
-                	Menu menu = orderList[i];
-                	int count = 1;
+            		// 각 메뉴별로 주문된 개수를 카운트
+            		for (int i = 0; i < orderList.length; i++) {
+            			Menu menu = orderList[i];
+            			int count = 1;
 
-                	// 현재 메뉴와 동일한 메뉴가 뒤에 중복해서 주문되었는지 확인
-                	for (int j = i + 1; j < orderList.length; j++) {
-                		if (menu == orderList[j]) {
-                			count++;
-                		}
-                	}
+            			// 현재 메뉴와 동일한 메뉴가 뒤에 중복해서 주문되었는지 확인
+            			for (int j = i + 1; j < orderList.length; j++) {
+            				if (menu == orderList[j]) {
+            					count++;
+            				}
+            			}
+            			menuCounts[i] = count;
+            		}
 
-                	menuCounts[i] = count;
-                }
+            		// 중복을 제외하고 주문 내역 출력
+            		for (int i = 0; i < orderList.length; i++) {
+            			if (i > 0 && orderList[i] == orderList[i - 1]) {
+            				continue; // 중복된 메뉴는 출력하지 않음
+            			}
 
-                // 중복을 제외하고 주문 내역 출력
-                for (int i = 0; i < orderList.length; i++) {
-                	if (i > 0 && orderList[i] == orderList[i - 1]) {
-                		continue; // 중복된 메뉴는 출력하지 않음
-                	}
-
-                	Menu menu = orderList[i];
-                	int count = menuCounts[i];
-                	System.out.println(menu.getName() + ", " + count + "\n");
+            			Menu menu = orderList[i];
+            			int count = menuCounts[i];
+            			System.out.println(menu.getName() + ", " + count);
+            		}
+            	}else {
+                    System.out.println("유효하지 않은 테이블 번호입니다. 다시 선택하세요.");
                 }
                 break;
+            
             default:
                 System.out.println("유효하지 않은 선택입니다. 다시 선택하세요.");
                 break;

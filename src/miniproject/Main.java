@@ -6,7 +6,7 @@ public class Main {
 	public static void main(String[] args) {
 		Restaurant restaurant = new Restaurant();
         Scanner sc = new Scanner(System.in);
-        Table[] tables = new Table[5]; // 테이블 개수를 5개로 가정
+        Table[] tables = new Table[5]; // 테이블 개수 5개(일단..)
         
         for (int i = 0; i < tables.length; i++) {
         	tables[i] = new Table(i + 1); // 테이블 번호는 1부터 시작
@@ -17,6 +17,7 @@ public class Main {
             System.out.println("\n=== 메뉴 목록 ===");
             Menu[] menuList = restaurant.getMenuList();
             
+            // 메뉴 출력
             for (int i = 0; i < menuList.length; i++) {
             	Menu menu = menuList[i];
                 if (menu != null) {
@@ -41,9 +42,12 @@ public class Main {
             case 1:
                 System.out.print("추가할 메뉴의 이름을 입력하세요: ");
                 String name = sc.next();
+                
                 System.out.print("추가할 메뉴의 가격을 입력하세요: ");
                 double price = sc.nextDouble();
+                
                 Menu newMenu = new Menu(name, price);
+                
                 boolean isAdded = restaurant.addMenu(newMenu);
                 if (isAdded) {
                     System.out.println(newMenu.getName() + " 메뉴가 추가되었습니다.\n");
@@ -56,6 +60,7 @@ public class Main {
             case 2:
             	System.out.print("삭제할 메뉴의 번호를 입력하세요: ");
                 int menuNumber = sc.nextInt();
+                
                 boolean isDeleted = restaurant.deleteMenu(menuNumber);
                 if (isDeleted) {
                     System.out.println("메뉴가 삭제되었습니다.\n");
@@ -67,8 +72,13 @@ public class Main {
             // 테이블 번호 + 주문
             case 3:
             	System.out.println("\n=== 사용 가능한 테이블 목록 ===");
-            	Table.showAvailableTables(tables);
-            	System.out.print("주문할 테이블 번호를 선택하세요: ");
+            	int[] availableTables = Table.showAvailableTables(tables);
+                
+            	for (int i = 0; i < availableTables.length; i++) {
+                    System.out.print(availableTables[i] + " ");
+                }
+            	
+            	System.out.print("\n주문할 테이블 번호를 선택하세요: ");
             	int tableNumber = sc.nextInt();
             	
             	if (tableNumber >= 1 && tableNumber <= tables.length) {
@@ -77,6 +87,7 @@ public class Main {
             		while (true) {
             			System.out.print("주문할 메뉴 번호를 입력하세요 (종료하려면 0 입력): ");
             			int orderChoice = sc.nextInt();
+            			
             			if (orderChoice == 0) {
             				break;
             			} else if (orderChoice >= 1 && orderChoice <= menuList.length) {
@@ -88,17 +99,17 @@ public class Main {
             					for (int i = 0; i < num; i++) {
             						selectedTable.addOrder(menuChoice);
             					}
-
             					System.out.println(menuChoice.getName() + " " + num + "개가 주문되었습니다.\n");
             				} else {
             					System.out.println("유효하지 않은 선택입니다. 다시 선택하세요.");
             				}
+            				
             			} else {
             				System.out.println("유효하지 않은 선택입니다. 다시 선택하세요.");
             			}
             		}
             	
-            		System.out.println("\n == 주문 내역 ==");
+            		System.out.println("\n == " + tableNumber + " 번 테이블" + "주문 내역 ==");
             		Menu[] orderList = selectedTable.getOrderList();
 
             		// 주문된 메뉴의 개수를 저장하기 위한 배열

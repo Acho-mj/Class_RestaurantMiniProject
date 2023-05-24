@@ -38,6 +38,7 @@ public class Restaurant {
         return sortedMenuList;
     }
     
+    // 메뉴 추가 
     public boolean addMenu(Menu menu) {
         for (int i = 0; i < menuList.length; i++) {
             if (menuList[i] != null && menuList[i].getName().equals(menu.getName())) {
@@ -53,7 +54,8 @@ public class Restaurant {
         }
         return false; // 더 이상 메뉴를 추가할 수 없음
     }
-
+    
+    // 메뉴 삭제 
     public boolean deleteMenu(int menuNumber) {
         if (menuNumber >= 1 && menuNumber <= menuList.length) {
             int index = menuNumber - 1;

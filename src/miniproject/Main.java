@@ -62,10 +62,18 @@ public class Main {
                 
             // 테이블 추가    
             case 4:
-            	System.out.print("추가할 테이블 이름을 입력하세요: ");
-            	String tableName = sc.nextLine();
-                restaurant.addTable(tableName);
-                System.out.println(tableName + " 테이블이 추가되었습니다.");
+            	while (true) {
+                    System.out.print("추가할 테이블 이름을 입력하세요: ");
+                    String tableName = sc.nextLine();
+
+                    if (restaurant.getTable(tableName) != null) {
+                        System.out.println("이미 존재하는 테이블 번호입니다. 다른 번호를 입력해주세요.");
+                    } else {
+                        restaurant.addTable(tableName);
+                        System.out.println(tableName + " 테이블이 추가되었습니다.");
+                        break;
+                    }
+                }
                 break;
             
             // 테이블 삭제

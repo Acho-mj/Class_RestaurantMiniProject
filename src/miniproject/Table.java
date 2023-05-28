@@ -5,12 +5,29 @@ import java.util.Arrays;
 class Table {
     private Menu[] orderList;	//주문 목록을 배열 형태로 저장
     private int orderCount;	//주문 수 저장
-    private int tableNumber;  //테이블 번호
+    private String tableName;  //테이블 이름
+    
+    public Table(String tableName) {
+    	this.tableName = tableName;
+        this.orderList = new Menu[100]; // 최대 100개의 주문까지 저장 가능
+        this.orderCount = 0;	
+    }
+    
+    public String getTableName() {
+        return tableName;
+    }
+    
+    public void addOrder(Menu menu) {
+    	if (orderCount < orderList.length) {
+            orderList[orderCount] = menu;
+            orderCount++;
+        } else {
+            System.out.println("더 이상 주문을 추가할 수 없습니다.");
+        }
+    }
 
-    public Table(int tableNumber) {
-    	this.tableNumber = tableNumber;
-        orderList = new Menu[100]; // 최대 100개의 주문까지 저장 가능
-        orderCount = 0;	
+    public Menu[] getOrderList() {
+    	return orderList;
     }
     
     public static int[] showAvailableTables(Table[] tableList) {
@@ -19,23 +36,19 @@ class Table {
 
         for (Table table : tableList) {
             if (table != null) {
-                availableTables[count] = table.getTableNumber();
+                availableTables[count] = Integer.parseInt(table.getTableName());
                 count++;
             }
         }
         return Arrays.copyOf(availableTables, count);
     }
+   
     
-    public int getTableNumber() {
-        return tableNumber;
-    }
-
-    public void addOrder(Menu menu) {
-        orderList[orderCount] = menu;
-        orderCount++;
-    }
-
-    public Menu[] getOrderList() {
-        return Arrays.copyOf(orderList, orderCount);
+    // equals 정의할 것
+    public boolean equals(Table t) {
+    	if (this.tableName == t.getTableName())
+    		return true;
+    	else
+    		return false;
     }
 }

@@ -17,12 +17,20 @@ class Table {
         return tableName;
     }
     
-    public void addOrder(Menu menu) {
-    	if (orderCount < orderList.length) {
-            orderList[orderCount] = menu;
-            orderCount++;
-        } else {
-            System.out.println("더 이상 주문을 추가할 수 없습니다.");
+//    public void addOrder(Menu menu) {
+//    	if (orderCount < orderList.length) {
+//            orderList[orderCount] = menu;
+//            orderCount++;
+//        } else {
+//            System.out.println("더 이상 주문을 추가할 수 없습니다.");
+//        }
+//    }
+    public void addOrder(Menu menu, int quantity) {
+        if (orderCount < orderList.length) {
+            for (int i = 0; i < quantity; i++) {
+                orderList[orderCount] = menu;
+                orderCount++;
+            }
         }
     }
 

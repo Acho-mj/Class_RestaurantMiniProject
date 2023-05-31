@@ -37,6 +37,17 @@ public class Restaurant {
         }
         return false;
     }
+    
+    public Menu getMenu(String name) {
+        for (int i = 0; i < menuCount; i++) {
+            Menu menu = menuList[i];
+            if (menu.getName().equals(name)) {
+                return menu;
+            }
+        }
+        return null;
+    }
+
 
     public void addTable(String name) {
         Table table = new Table(name);

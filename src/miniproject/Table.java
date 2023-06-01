@@ -3,13 +3,13 @@ package miniproject;
 import java.util.Arrays;
 
 class Table {
-    private Menu[] orderList;	//주문 목록을 배열 형태로 저장
+    private Order[] orderList;	//주문 목록을 배열 형태로 저장
     private int orderCount;	//주문 수 저장
     private String tableName;  //테이블 이름
     
     public Table(String tableName) {
     	this.tableName = tableName;
-        this.orderList = new Menu[100]; // 최대 100개의 주문까지 저장 가능
+        this.orderList = new Order[100]; // 최대 100개의 주문까지 저장 가능
         this.orderCount = 0;	
     }
     
@@ -27,15 +27,14 @@ class Table {
 //    }
     public void addOrder(Menu menu, int quantity) {
         if (orderCount < orderList.length) {
-            for (int i = 0; i < quantity; i++) {
-                orderList[orderCount] = menu;
-                orderCount++;
-            }
+        	Order order = new Order(menu.getName(), menu.getPrice(), quantity);
+            orderList[orderCount] = order;
+            orderCount++;
         }
     }
 
-    public Menu[] getOrderList() {
-    	return orderList;
+    public Order[] getOrderList() {
+        return orderList;
     }
     
     public static int[] showAvailableTables(Table[] tableList) {

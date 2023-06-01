@@ -17,6 +17,8 @@ public class Main {
             System.out.println("5. 테이블 삭제");
             System.out.println("6. 테이블 목록 보기");
             System.out.println("7. 주문하기");
+            System.out.println("8. 주문 목록 보기");
+            System.out.println("9. 체크아웃하기");
             System.out.println("0. 종료");
             System.out.print("원하는 작업을 선택하세요: ");
             int choice = sc.nextInt();
@@ -82,7 +84,7 @@ public class Main {
                     String tableName = sc.nextLine();
 
                     if (restaurant.getTable(tableName) != null) {
-                        System.out.println("이미 존재하는 테이블 번호입니다. 다른 번호를 입력해주세요.");
+                        System.out.println("이미 존재하는 테이블입니다. 다시 입력해주세요.");
                     } else {
                         restaurant.addTable(tableName);
                         System.out.println(tableName + " 테이블이 추가되었습니다.");
@@ -98,7 +100,7 @@ public class Main {
                     String removeTableName = sc.nextLine();
 
                     if (restaurant.getTable(removeTableName) == null) {
-                        System.out.println("존재하지 않는 테이블 번호입니다. 다른 번호를 입력해주세요.");
+                        System.out.println("존재하지 않는 테이블입니다. 다시 입력해주세요.");
                     } else {
                         if (restaurant.deleteTable(removeTableName)) {
                             System.out.println(removeTableName + " 테이블이 삭제되었습니다.");
@@ -118,29 +120,96 @@ public class Main {
             
             // 테이블 번호 + 주문
             case 7:
-            	
-            	System.out.print("주문받을 테이블 이름을 입력하세요: ");
-                String orderTableName = sc.nextLine();
-                Table orderTable = restaurant.getTable(orderTableName);
+            	String orderTableName = null;
+                Table orderTable = null;
+            	while (true) {
+                    System.out.print("주문받을 테이블 이름을 입력하세요: ");
+                    orderTableName = sc.nextLine();
 
-                if (orderTable != null) {
-                    System.out.print("주문할 메뉴 이름을 입력하세요: ");
-                    String orderMenuName = sc.nextLine();
-    
-                    Menu orderMenu = restaurant.getMenu(orderMenuName);
-                    if (orderMenu != null) {
-                        System.out.print("주문할 수량을 입력하세요: ");
-                        int quantity = sc.nextInt();
-                        sc.nextLine();
-    
-                        orderTable.addOrder(orderMenu, quantity);
-                    } else {
-                        System.out.println("유효하지 않은 메뉴 이름입니다.");
-                    }
-                } else {
-                    System.out.println("유효하지 않은 테이블입니다.");
+                    if (restaurant.getTable(orderTableName) == null) {
+                        System.out.println("존재하지 않는 테이블입니다. 다시 입력해주세요.");
+                    } else
+                    	break;
                 }
+               
+                orderTable = restaurant.getTable(orderTableName);
+
+                String orderMenuName = null;
+                Menu orderMenu = null;
+                boolean validMenu = false;
+
+                while (!validMenu) {
+                    System.out.print("주문할 메뉴 이름을 입력하세요: ");
+                    orderMenuName = sc.nextLine();
+
+                    orderMenu = restaurant.getMenu(orderMenuName);
+                    if (orderMenu != null) {
+                        validMenu = true;
+                    } else {
+                        System.out.println("유효하지 않은 메뉴 이름입니다. 다시 입력해주세요.");
+                    }
+                }
+
+                System.out.print("주문할 수량을 입력하세요: ");
+                int quantity = sc.nextInt();
+                sc.nextLine();
+
+                orderTable.addOrder(orderMenu, quantity);
+
+                System.out.print("계속해서 주문을 진행하시겠습니까? (Y/N): ");
+                String answer = sc.nextLine();
+
+                if (answer.equalsIgnoreCase("N")) {
+                    break;
+                }
+            
                 break;
+               
+            // 주문 목록 보기     
+            case 8:
+            	String orderListTableName = null;
+                Table orderListTable = null;
+            	while (true) {
+                    System.out.print("주문 목록을 확인할 테이블 이름을 입력하세요: ");
+                    orderListTableName = sc.nextLine();
+
+                    if (restaurant.getTable(orderListTableName) == null) {
+                        System.out.println("존재하지 않는 테이블입니다. 다시 입력해주세요.");
+                    } else
+                    	break;
+                }
+            	orderListTable = restaurant.getTable(orderListTableName);
+                
+            	if (orderListTable != null) {
+                    System.out.println("주문 목록 - " + orderListTable.getTableName());
+                    System.out.println("----------------------------");
+                    System.out.println("메뉴\t수량\t금액");
+                    System.out.println("-----------------------------");
+                    
+                    Order[] orders = orderListTable.getOrderList();
+                    int totalPrice = 0;
+
+                    for (Order order : orders) {
+                        if (order != null) {
+                            Menu menu = order.getMenu();
+                            int num = order.getQuantity();
+                            double price = menu.getPrice() * num;
+
+                            System.out.println(menu.getName() + "\t" + num + "\t" + price);
+                            totalPrice += price;
+                        }
+                    }
+
+                    System.out.println("-----------------------------");
+                    System.out.println("총 대금: " + totalPrice);
+                } 
+                break;
+
+            	
+            // 체크아웃하기	
+            case 9:
+            	
+            	break;
             
             default:
                 System.out.println("유효하지 않은 선택입니다. 다시 선택하세요.");

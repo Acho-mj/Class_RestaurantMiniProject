@@ -37,6 +37,10 @@ class Table {
         return orderList;
     }
     
+    public void clearOrderList() {
+        orderList = new Order[100];
+    }
+    
     public static int[] showAvailableTables(Table[] tableList) {
     	int[] availableTables = new int[tableList.length];
         int count = 0;

@@ -10,15 +10,11 @@ public class Main {
         System.out.println("<< 음식점 주문 시스템 >>");
         
         while (true) {
-            System.out.println("\n1. 메뉴 추가");
-            System.out.println("2. 메뉴 삭제");
-            System.out.println("3. 메뉴 목록 보기");
-            System.out.println("4. 테이블 추가");
-            System.out.println("5. 테이블 삭제");
-            System.out.println("6. 테이블 목록 보기");
-            System.out.println("7. 주문하기");
-            System.out.println("8. 주문 목록 보기");
-            System.out.println("9. 체크아웃하기");
+            System.out.println("\n1. 메뉴 관련 작업");
+            System.out.println("2. 테이블 관련 작업");
+            System.out.println("3. 주문하기");
+            System.out.println("4. 주문 목록 보기");
+            System.out.println("5. 체크아웃하기");
             System.out.println("0. 종료");
             System.out.print("원하는 작업을 선택하세요: ");
             int choice = sc.nextInt();
@@ -31,95 +27,149 @@ public class Main {
                 sc.close();
                 return;
                 
-            // 메뉴 추가
+             // 메뉴 관련 작업
             case 1:
             	while (true) {
-                    System.out.print("추가할 메뉴의 이름을 입력하세요: ");
-                    String menuName = sc.nextLine();
+            		System.out.println("\n1. 메뉴 추가");
+                    System.out.println("2. 메뉴 삭제");
+                    System.out.println("3. 메뉴 목록 보기");
+                    System.out.println("0. 이전 메뉴로 돌아가기");
+                    System.out.print("원하는 작업을 선택하세요: ");
+                    int menuChoice = sc.nextInt();
+                    sc.nextLine(); // 개행 문자 제거
                     
-                    if (restaurant.getMenu(menuName) != null) {
-                        System.out.println("이미 존재하는 메뉴 이름입니다. 다른 이름을 입력해주세요.");
-                    } else {
-                        System.out.print("추가할 메뉴의 가격을 입력하세요: ");
-                        double menuPrice = sc.nextDouble();
-                        sc.nextLine();
+                    switch (menuChoice) {
+                    	// 메뉴 추가
+                        case 1:
+                        	while (true) {
+                                System.out.print("추가할 메뉴의 이름을 입력하세요: ");
+                                String menuName = sc.nextLine();
+                                
+                                if (restaurant.getMenu(menuName) != null) {
+                                    System.out.println("이미 존재하는 메뉴 이름입니다. 다른 이름을 입력해주세요.");
+                                } else {
+                                    System.out.print("추가할 메뉴의 가격을 입력하세요: ");
+                                    double menuPrice = sc.nextDouble();
+                                    sc.nextLine();
+                                    
+                                    restaurant.addMenu(menuName, menuPrice);
+                                    System.out.println(menuName + " 메뉴가 추가되었습니다.");
+                                    break;
+                                }
+                            }
+                            break;
+                            
+                        // 메뉴 삭제
+                        case 2:
+                        	while (true) {
+                                System.out.print("삭제할 메뉴의 이름을 입력하세요: ");
+                                String deleteMenuName = sc.nextLine();
+                                
+                                if (restaurant.getMenu(deleteMenuName) == null) {
+                                    System.out.println("존재하지 않는 메뉴 이름입니다. 다른 이름을 입력해주세요.");
+                                } else {
+                                    if (restaurant.deleteMenu(deleteMenuName)) {
+                                        System.out.println(deleteMenuName + " 메뉴가 삭제되었습니다.");
+                                    } else {
+                                        System.out.println("메뉴 삭제에 실패했습니다.");
+                                    }
+                                    break;
+                                }
+                            }
+                            break;
+                            
+                        // 메뉴 목록 출력
+                        case 3:
+                            System.out.println("\n=== 메뉴 목록 ===");
+                            restaurant.printMenuList();
+                            break;
                         
-                        restaurant.addMenu(menuName, menuPrice);
-                        System.out.println(menuName + " 메뉴가 추가되었습니다.");
-                        break;
+                        // 이전 메뉴로 돌아가기
+                        case 0:
+                        	break;
+                        	
+                        default:
+                            System.out.println("유효하지 않은 선택입니다. 다시 선택하세요.");
+                            break;
+                    }
+                    
+                    if (menuChoice == 0) {
+                    	break;
                     }
                 }
                 break;
-
             
-            //메뉴 삭제 
+                
+             // 테이블 관련 작업
             case 2:
             	while (true) {
-                    System.out.print("삭제할 메뉴의 이름을 입력하세요: ");
-                    String deleteMenuName = sc.nextLine();
+            		System.out.println("\n1. 테이블 추가");
+                    System.out.println("2. 테이블 삭제");
+                    System.out.println("3. 테이블 목록 보기");
+                    System.out.println("0. 이전 메뉴로 돌아가기");
+                    System.out.print("원하는 작업을 선택하세요: ");
+                    int tableChoice = sc.nextInt();
+                    sc.nextLine(); // 개행 문자 제거
                     
-                    if (restaurant.getMenu(deleteMenuName) == null) {
-                        System.out.println("존재하지 않는 메뉴 이름입니다. 다른 이름을 입력해주세요.");
-                    } else {
-                        if (restaurant.deleteMenu(deleteMenuName)) {
-                            System.out.println(deleteMenuName + " 메뉴가 삭제되었습니다.");
-                        } else {
-                            System.out.println("메뉴 삭제에 실패했습니다.");
-                        }
-                        break;
+                    switch (tableChoice) {
+                    	// 테이블 추가
+                        case 1:
+                        	while (true) {
+                                System.out.print("추가할 테이블 이름을 입력하세요: ");
+                                String tableName = sc.nextLine();
+        
+                                if (restaurant.getTable(tableName) != null) {
+                                    System.out.println("이미 존재하는 테이블입니다. 다시 입력해주세요.");
+                                } else {
+                                    restaurant.addTable(tableName);
+                                    System.out.println(tableName + " 테이블이 추가되었습니다.");
+                                    break;
+                                }
+                            }
+                            break;
+                            
+                        // 테이블 삭제
+                        case 2:
+                        	while (true) {
+                                System.out.print("삭제할 테이블 이름을 입력하세요: ");
+                                String removeTableName = sc.nextLine();
+        
+                                if (restaurant.getTable(removeTableName) == null) {
+                                    System.out.println("존재하지 않는 테이블입니다. 다시 입력해주세요.");
+                                } else {
+                                    if (restaurant.deleteTable(removeTableName)) {
+                                        System.out.println(removeTableName + " 테이블이 삭제되었습니다.");
+                                    } else {
+                                        System.out.println("테이블 삭제에 실패했습니다.");
+                                    }
+                                    break;
+                                }
+                            }
+                            break;
+                            
+                        // 테이블 목록 출력
+                        case 3:
+                            System.out.println("\n=== 테이블 목록 ===");
+                            restaurant.printTableList();
+                            break;
+                        
+                        // 이전 메뉴로 돌아가기
+                        case 0:
+                        	break;
+                        	
+                        default:
+                            System.out.println("유효하지 않은 선택입니다. 다시 선택하세요.");
+                            break;
+                    }
+                    
+                    if (tableChoice == 0) {
+                    	break;
                     }
                 }
-                break;
-            
-             // 메뉴 목록 출력
-            case 3:
-                System.out.println("\n=== 메뉴 목록 ===");
-                restaurant.printMenuList();
-                break;
-                
-            // 테이블 추가    
-            case 4:
-            	while (true) {
-                    System.out.print("추가할 테이블 이름을 입력하세요: ");
-                    String tableName = sc.nextLine();
-
-                    if (restaurant.getTable(tableName) != null) {
-                        System.out.println("이미 존재하는 테이블입니다. 다시 입력해주세요.");
-                    } else {
-                        restaurant.addTable(tableName);
-                        System.out.println(tableName + " 테이블이 추가되었습니다.");
-                        break;
-                    }
-                }
-                break;
-            
-            // 테이블 삭제
-            case 5:
-            	while (true) {
-                    System.out.print("삭제할 테이블 이름을 입력하세요: ");
-                    String removeTableName = sc.nextLine();
-
-                    if (restaurant.getTable(removeTableName) == null) {
-                        System.out.println("존재하지 않는 테이블입니다. 다시 입력해주세요.");
-                    } else {
-                        if (restaurant.deleteTable(removeTableName)) {
-                            System.out.println(removeTableName + " 테이블이 삭제되었습니다.");
-                        } else {
-                            System.out.println("테이블 삭제에 실패했습니다.");
-                        }
-                        break;
-                    }
-                }
-                 break;
-                 
-              // 테이블 목록 출력
-            case 6:
-                System.out.println("\n=== 테이블 목록 ===");
-                restaurant.printTableList();
                 break;
             
             // 테이블 번호 + 주문
-            case 7:
+            case 3:
             	String orderTableName = null;
                 Table orderTable = null;
             	while (true) {
@@ -155,7 +205,8 @@ public class Main {
                 sc.nextLine();
 
                 orderTable.addOrder(orderMenu, quantity);
-
+                
+                // @ 수정 필요 계속 주문 받는게 안됨 
                 System.out.print("계속해서 주문을 진행하시겠습니까? (Y/N): ");
                 String answer = sc.nextLine();
 
@@ -166,7 +217,7 @@ public class Main {
                 break;
                
             // 주문 목록 보기     
-            case 8:
+            case 4:
             	String orderListTableName = null;
                 Table orderListTable = null;
             	while (true) {
@@ -207,9 +258,23 @@ public class Main {
 
             	
             // 체크아웃하기	
-            case 9:
-            	
-            	break;
+            case 5:
+            	String checkoutTableName = null;
+                Table checkoutTable = null;
+                while (true) {
+                    System.out.print("체크아웃할 테이블 이름을 입력하세요: ");
+                    checkoutTableName = sc.nextLine();
+
+                    if (restaurant.getTable(checkoutTableName) == null) {
+                        System.out.println("존재하지 않는 테이블입니다. 다시 입력해주세요.");
+                    } else
+                        break;
+                }
+                checkoutTable = restaurant.getTable(checkoutTableName);
+                
+                // 체크아웃 후 테이블의 주문 목록 초기화
+                checkoutTable.clearOrderList();           
+                break;
             
             default:
                 System.out.println("유효하지 않은 선택입니다. 다시 선택하세요.");

@@ -113,20 +113,24 @@ public class Main {
                     
                     switch (tableChoice) {
                     	// 테이블 추가
-                        case 1:
-                        	while (true) {
-                                System.out.print("추가할 테이블 이름을 입력하세요: ");
-                                String tableName = sc.nextLine();
-        
-                                if (restaurant.getTable(tableName) != null) {
-                                    System.out.println("이미 존재하는 테이블입니다. 다시 입력해주세요.");
-                                } else {
-                                    restaurant.addTable(tableName);
-                                    System.out.println(tableName + " 테이블이 추가되었습니다.");
-                                    break;
-                                }
+                    case 1:
+                        while (true) {
+                            System.out.print("추가할 테이블 이름을 입력하세요: ");
+                            String tableName = sc.nextLine();
+
+                            if (restaurant.getTable(tableName) != null) {
+                                System.out.println("이미 존재하는 테이블입니다. 다시 입력해주세요.");
+                            } else {
+                                System.out.print("테이블의 수용 인원을 입력하세요: ");
+                                int tableCapacity = sc.nextInt();
+                                sc.nextLine();
+
+                                restaurant.addTable(tableName, tableCapacity);
+                                System.out.println(tableName + " 테이블이 추가되었습니다.");
+                                break;
                             }
-                            break;
+                        }
+                        break;
                             
                         // 테이블 삭제
                         case 2:
@@ -172,18 +176,40 @@ public class Main {
             case 3:
             	String orderTableName = null;
                 Table orderTable = null;
-            	while (true) {
+                boolean capacityExceeded = false;
+                
+                while(true) {
                     System.out.print("주문받을 테이블 이름을 입력하세요: ");
                     orderTableName = sc.nextLine();
 
                     if (restaurant.getTable(orderTableName) == null) {
                         System.out.println("존재하지 않는 테이블입니다. 다시 입력해주세요.");
-                    } else
-                    	break;
-                }
-               
-                orderTable = restaurant.getTable(orderTableName);
+                        continue; // 존재하지 않는 테이블일 경우, 다시 반복문의 처음으로 돌아가 테이블 이름을 입력받습니다.
+                    }
 
+                    orderTable = restaurant.getTable(orderTableName);
+                    if (orderTable.availableTables()) {
+                        System.out.println("이미 주문을 받은 테이블입니다. 다른 테이블을 선택해주세요.");
+                        continue; // 이미 주문을 받은 테이블일 경우, 다시 반복문의 처음으로 돌아가 테이블 이름을 입력받습니다.
+                    }
+
+                    int tableCapacity = orderTable.getCapacity();
+                    System.out.print("주문할 인원 수를 입력하세요: ");
+                    int numberOfPeople = sc.nextInt();
+                    sc.nextLine();
+
+                    if (numberOfPeople > tableCapacity) {
+                        System.out.println("테이블 수용 인원을 초과하였습니다. 다른 테이블을 선택해주세요.");
+                        capacityExceeded = true;
+                    } else {
+                        capacityExceeded = false;
+                        break;
+                    }
+                } 
+
+               
+                orderTable = restaurant.getTable(orderTableName);  
+              
                 String orderMenuName = null;
                 Menu orderMenu = null;
                 boolean validMenu = false;

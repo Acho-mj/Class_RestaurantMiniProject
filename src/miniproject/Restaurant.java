@@ -3,6 +3,7 @@ package miniproject;
 public class Restaurant {
     private Menu[] menuList;
     private Table[] tableList;
+
     private int menuCount;
     private int tableCount;
     
@@ -13,7 +14,7 @@ public class Restaurant {
         menuCount = 0;
         tableCount = 0;
     }
-    
+
     // 메뉴 추가 
     public void addMenu(String name, double price) {
         Menu menu = new Menu(name, price);
@@ -49,8 +50,8 @@ public class Restaurant {
     }
 
 
-    public void addTable(String name) {
-        Table table = new Table(name);
+    public void addTable(String tableName, int capacity) {
+        Table table = new Table(tableName, capacity);
         tableList[tableCount] = table;
         tableCount++;
     }
@@ -80,6 +81,8 @@ public class Restaurant {
         }
         return null;
     }
+    
+
 
     public Menu[] getMenuList() {
         return menuList;

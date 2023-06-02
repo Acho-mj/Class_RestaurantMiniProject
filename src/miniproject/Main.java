@@ -199,48 +199,49 @@ public class Main {
                     sc.nextLine();
 
                     if (numberOfPeople > tableCapacity) {
-                        System.out.println("테이블 수용 인원을 초과하였습니다. 다른 테이블을 선택해주세요.");
-                        capacityExceeded = true;
-                    } else {
-                        capacityExceeded = false;
-                        break;
+                        System.out.println("테이블 수용 인원인 " + orderTable.getCapacity() + "명을 초과하였습니다. 다른 테이블을 선택해주세요.");
+                        continue; // 테이블 수용 인원 초과일 경우, 다시 반복문의 처음으로 돌아가 테이블 이름을 입력받습니다.
                     }
-                } 
+                    break; // 테이블 선택이 완료되면 반복문을 빠져나갑니다.
+                }
 
                
-                orderTable = restaurant.getTable(orderTableName);  
+//                orderTable = restaurant.getTable(orderTableName);  
               
-                String orderMenuName = null;
-                Menu orderMenu = null;
-                boolean validMenu = false;
+             // 주문 진행
+                while (true) {
+                    String orderMenuName = null;
+                    Menu orderMenu = null;
+                    boolean validMenu = false;
 
-                while (!validMenu) {
-                    System.out.print("주문할 메뉴 이름을 입력하세요: ");
-                    orderMenuName = sc.nextLine();
+                    while (!validMenu) {
+                        System.out.print("주문할 메뉴 이름을 입력하세요: ");
+                        orderMenuName = sc.nextLine();
 
-                    orderMenu = restaurant.getMenu(orderMenuName);
-                    if (orderMenu != null) {
-                        validMenu = true;
-                    } else {
-                        System.out.println("유효하지 않은 메뉴 이름입니다. 다시 입력해주세요.");
+                        orderMenu = restaurant.getMenu(orderMenuName);
+                        if (orderMenu != null) {
+                            validMenu = true;
+                        } else {
+                            System.out.println("유효하지 않은 메뉴 이름입니다. 다시 입력해주세요.");
+                        }
+                    }
+
+                    System.out.print("주문할 수량을 입력하세요: ");
+                    int quantity = sc.nextInt();
+                    sc.nextLine();
+
+                    orderTable.addOrder(orderMenu, quantity);
+
+                    System.out.print("계속해서 주문을 진행하시겠습니까? (N 입력시 주문 끝남): ");
+                    String answer = sc.nextLine().trim();
+
+                    if (answer.equalsIgnoreCase("N")) {
+                        break;
                     }
                 }
 
-                System.out.print("주문할 수량을 입력하세요: ");
-                int quantity = sc.nextInt();
-                sc.nextLine();
-
-                orderTable.addOrder(orderMenu, quantity);
-                
-                // @ 수정 필요 계속 주문 받는게 안됨 
-                System.out.print("계속해서 주문을 진행하시겠습니까? (Y/N): ");
-                String answer = sc.nextLine();
-
-                if (answer.equalsIgnoreCase("N")) {
-                    break;
-                }
-            
                 break;
+                
                
             // 주문 목록 보기     
             case 4:
@@ -258,10 +259,10 @@ public class Main {
             	orderListTable = restaurant.getTable(orderListTableName);
                 
             	if (orderListTable != null) {
-                    System.out.println("주문 목록 - " + orderListTable.getTableName());
-                    System.out.println("----------------------------");
-                    System.out.println("메뉴\t수량\t금액");
-                    System.out.println("-----------------------------");
+                    System.out.println("\n" + orderListTable.getTableName() + " 테이블 주문 목록");
+                    System.out.println("------------------------------------");
+                    System.out.println("메뉴\t가격\t수량\t금액");
+                    System.out.println("------------------------------------");
                     
                     Order[] orders = orderListTable.getOrderList();
                     int totalPrice = 0;
@@ -272,13 +273,14 @@ public class Main {
                             int num = order.getQuantity();
                             double price = menu.getPrice() * num;
 
-                            System.out.println(menu.getName() + "\t" + num + "\t" + price);
+                            System.out.println(menu.getName() + "\t" + menu.getPrice() + "\t" + num + "\t" + price);
                             totalPrice += price;
                         }
                     }
 
-                    System.out.println("-----------------------------");
-                    System.out.println("총 대금: " + totalPrice);
+                    System.out.println("------------------------------------");
+                    System.out.println("총 금액: " + totalPrice);
+                    System.out.println("------------------------------------");
                 } 
                 break;
 
@@ -300,6 +302,7 @@ public class Main {
                 
                 // 체크아웃 후 테이블의 주문 목록 초기화
                 checkoutTable.clearOrderList();           
+                System.out.println(checkoutTable.getTableName() + " 테이블이 비었습니다.");
                 break;
             
             default:

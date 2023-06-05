@@ -16,4 +16,14 @@ class Menu {
     public double getPrice() {
         return price;
     }
+    
+    // equals 정의할 것
+    public boolean equals(Menu m) {
+        if (this.getName().equals(m.getName())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

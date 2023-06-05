@@ -176,7 +176,6 @@ public class Main {
             case 3:
             	String orderTableName = null;
                 Table orderTable = null;
-                boolean capacityExceeded = false;
                 
                 while(true) {
                     System.out.print("주문받을 테이블 이름을 입력하세요: ");
@@ -205,10 +204,9 @@ public class Main {
                     break; // 테이블 선택이 완료되면 반복문을 빠져나갑니다.
                 }
 
-               
-//                orderTable = restaurant.getTable(orderTableName);  
+                
               
-             // 주문 진행
+                // 주문 진행
                 while (true) {
                     String orderMenuName = null;
                     Menu orderMenu = null;

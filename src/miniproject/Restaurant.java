@@ -105,7 +105,7 @@ public class Restaurant {
         for (int i = 0; i < tableCount; i++) {
             Table table = tableList[i];
             if (table != null) {
-                System.out.println(i + 1 + ". " + table.getTableName());
+                System.out.println(i + 1 + ". " + table.getTableName() + " : " + table.getCapacity());
             }
         }
     }

@@ -29,9 +29,25 @@ class Table {
 //            System.out.println("더 이상 주문을 추가할 수 없습니다.");
 //        }
 //    }
+//    public void addOrder(Menu menu, int quantity) {
+//        Order order = new Order(menu.getName(), menu.getPrice(), quantity);
+//        orderList[orderCount++] = order;
+//    }
+    
+    // 각 메뉴의 주문 수량을 누적 !
     public void addOrder(Menu menu, int quantity) {
-        Order order = new Order(menu.getName(), menu.getPrice(), quantity);
-        orderList[orderCount++] = order;
+        // 이미 주문된 메뉴인지 확인하고, 중복된 경우 해당 메뉴의 주문 수량을 누적합니다.
+        for (int i = 0; i < orderCount; i++) {
+            if (orderList[i].getMenu().equals(menu)) {
+                orderList[i].setQuantity(orderList[i].getQuantity() + quantity);
+                return;
+            }
+        }
+
+        // 중복된 메뉴가 없는 경우 새로운 주문을 추가합니다.
+        Order newOrder = new Order(menu.getName(), menu.getPrice(), quantity);
+        orderList[orderCount] = newOrder;
+        orderCount++;
     }
 
     public Order[] getOrderList() {

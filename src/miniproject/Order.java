@@ -19,4 +19,9 @@ class Order extends Menu{
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
+    
+    // 주문의 가격을 계산하여 반환합니다.
+    public double pay() {
+        return getPrice() * quantity;
+    }
 }

@@ -21,21 +21,25 @@ class Table {
         return capacity;
     }
     
-//    public void addOrder(Menu menu) {
-//    	if (orderCount < orderList.length) {
-//            orderList[orderCount] = menu;
-//            orderCount++;
-//        } else {
-//            System.out.println("더 이상 주문을 추가할 수 없습니다.");
-//        }
-//    }
-//    public void addOrder(Menu menu, int quantity) {
-//        Order order = new Order(menu.getName(), menu.getPrice(), quantity);
-//        orderList[orderCount++] = order;
-//    }
-    
     // 각 메뉴의 주문 수량을 누적 !
-    public void addOrder(Menu menu, int quantity) {
+//    public void addOrder(Menu menu, int quantity) {
+//        // 이미 주문된 메뉴인지 확인하고, 중복된 경우 해당 메뉴의 주문 수량을 누적합니다.
+//        for (int i = 0; i < orderCount; i++) {
+//            if (orderList[i].getMenu().equals(menu)) {
+//                orderList[i].setQuantity(orderList[i].getQuantity() + quantity);
+//                return;
+//            }
+//        }
+//
+//        // 중복된 메뉴가 없는 경우 새로운 주문을 추가합니다.
+//        Order newOrder = new Order(menu.getName(), menu.getPrice(), quantity);
+//        orderList[orderCount] = newOrder;
+//        orderCount++;
+//    }
+    public void addOrder(Order order) {
+        Menu menu = order.getMenu();
+        int quantity = order.getQuantity();
+
         // 이미 주문된 메뉴인지 확인하고, 중복된 경우 해당 메뉴의 주문 수량을 누적합니다.
         for (int i = 0; i < orderCount; i++) {
             if (orderList[i].getMenu().equals(menu)) {
@@ -45,8 +49,7 @@ class Table {
         }
 
         // 중복된 메뉴가 없는 경우 새로운 주문을 추가합니다.
-        Order newOrder = new Order(menu.getName(), menu.getPrice(), quantity);
-        orderList[orderCount] = newOrder;
+        orderList[orderCount] = order;
         orderCount++;
     }
 
@@ -63,6 +66,14 @@ class Table {
     	return orderCount > 0;
     }
     
+    // 주문 목록의 총 결제 금액을 계산하여 반환합니다.
+    public double totalPay() {
+        double total = 0.0;
+        for (int i = 0; i < orderCount; i++) {
+            total += orderList[i].pay();
+        }
+        return total;
+    }
 
     // equals 정의할 것
     public boolean equals(Table t) {

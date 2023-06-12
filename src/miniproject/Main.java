@@ -81,7 +81,13 @@ public class Main {
                         // 메뉴 목록 출력
                         case 3:
                             System.out.println("\n=== 메뉴 목록 ===");
-                            restaurant.printMenuList();
+                            Menu[] menuList = restaurant.getMenuList();
+                            for (int i = 0; i < menuList.length; i++) {
+                                Menu menu = menuList[i];
+                                if (menu != null) {
+                                    System.out.println(i + 1 + ". " + menu.getName() + " : " + menu.getPrice());
+                                }
+                            }
                             break;
                         
                         // 이전 메뉴로 돌아가기
@@ -154,7 +160,13 @@ public class Main {
                         // 테이블 목록 출력
                         case 3:
                             System.out.println("\n=== 테이블 목록 ===");
-                            restaurant.printTableList();
+                            Table[] tableList = restaurant.getTableList();
+                            for (int i = 0; i < tableList.length; i++) {
+                                Table table = tableList[i];
+                                if (table != null) {
+                                    System.out.println(i + 1 + ". " + table.getTableName() + " : " + table.getCapacity());
+                                }
+                            }
                             break;
                         
                         // 이전 메뉴로 돌아가기
@@ -203,8 +215,6 @@ public class Main {
                     }
                     break; // 테이블 선택이 완료되면 반복문을 빠져나갑니다.
                 }
-
-                
               
                 // 주문 진행
                 while (true) {
@@ -228,8 +238,9 @@ public class Main {
                     int quantity = sc.nextInt();
                     sc.nextLine();
 
-                    orderTable.addOrder(orderMenu, quantity);
-
+                    Order order = new Order(orderMenu.getName(), orderMenu.getPrice(), quantity);
+                    orderTable.addOrder(order);
+                    
                     System.out.print("계속해서 주문을 진행하시겠습니까? (N 입력시 주문 끝남): ");
                     String answer = sc.nextLine().trim();
 

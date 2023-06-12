@@ -83,7 +83,6 @@ public class Restaurant {
     }
     
 
-
     public Menu[] getMenuList() {
         return menuList;
     }
@@ -92,22 +91,22 @@ public class Restaurant {
         return tableList;
     }
     
-    public void printMenuList() {
-        for (int i = 0; i < menuCount; i++) {
-            Menu menu = menuList[i];
-            if (menu != null) {
-                System.out.println(i + 1 + ". " + menu.getName() + " : " + menu.getPrice());
-            }
-        }
-    }
-    
-    public void printTableList() {
-        for (int i = 0; i < tableCount; i++) {
-            Table table = tableList[i];
-            if (table != null) {
-                System.out.println(i + 1 + ". " + table.getTableName() + " : " + table.getCapacity());
-            }
-        }
-    }
+//    public void printMenuList() {
+//        for (int i = 0; i < menuCount; i++) {
+//            Menu menu = menuList[i];
+//            if (menu != null) {
+//                System.out.println(i + 1 + ". " + menu.getName() + " : " + menu.getPrice());
+//            }
+//        }
+//    }
+//    
+//    public void printTableList() {
+//        for (int i = 0; i < tableCount; i++) {
+//            Table table = tableList[i];
+//            if (table != null) {
+//                System.out.println(i + 1 + ". " + table.getTableName() + " : " + table.getCapacity());
+//            }
+//        }
+//    }
     
 }

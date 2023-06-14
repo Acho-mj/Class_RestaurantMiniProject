@@ -82,6 +82,16 @@ public class Restaurant {
         return null;
     }
     
+ // 테이블 이름으로 테이블을 찾아 반환합니다.
+    public Table findTableByName(String tableName) {
+        for (Table table : tableList) {
+            if (table != null && table.getTableName().equals(tableName)) {
+                return table;
+            }
+        }
+        return null;
+    }
+    
 
     public Menu[] getMenuList() {
         return menuList;
@@ -90,23 +100,5 @@ public class Restaurant {
     public Table[] getTableList() {
         return tableList;
     }
-    
-//    public void printMenuList() {
-//        for (int i = 0; i < menuCount; i++) {
-//            Menu menu = menuList[i];
-//            if (menu != null) {
-//                System.out.println(i + 1 + ". " + menu.getName() + " : " + menu.getPrice());
-//            }
-//        }
-//    }
-//    
-//    public void printTableList() {
-//        for (int i = 0; i < tableCount; i++) {
-//            Table table = tableList[i];
-//            if (table != null) {
-//                System.out.println(i + 1 + ". " + table.getTableName() + " : " + table.getCapacity());
-//            }
-//        }
-//    }
-    
+  
 }

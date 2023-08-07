@@ -1,7 +1,11 @@
 # Class_RestaurantMiniProject
 
 JAVA 프로그래밍 기초 미니 프로젝트
-- 음식점 관리 시스템 - 기존 음식점의 POS 시스템 기능
-- UI class를 제외한 class에서 입출력문이 나오면 안 됨
-- Menu, Restaurant, Table, Employee, Manager 등의 class 생성 
-- 메뉴, 상품  추가하고  삭제하고  확인하기
+[ 음식점 관리 시스템 - 기존 음식점의 POS 시스템 기능 ]
+
+  - Menu, Restaurant, Table, Order 등의 class 생성 
+  - 메뉴  추가, 삭제, 조회하기 (이미 존재하는 메뉴일 경우 다시 입력)
+  - 테이블 추가, 삭재, 조화하기 (이미 존재하는 테이블일 경우 다시 입력)
+  - 해당 테이블에 메뉴 주문 + 수량추가 기능, 중복되는 order가 있을 경우 + 처리
+  - order 객체는 주문 시 주문 음식, 수량을 UI로부터 입력받기
+  - 체크아웃 시에는 테이블의 상태를 빈 상태로 만들기

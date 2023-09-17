@@ -1,6 +1,8 @@
 package miniproject;
 
-class Menu {
+import java.io.Serializable;
+
+class Menu implements Serializable{
     private String name;
     private double price;
 

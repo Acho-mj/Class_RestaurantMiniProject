@@ -1,6 +1,8 @@
 package miniproject;
 
-class Order extends Menu{
+import java.io.Serializable;
+
+class Order extends Menu implements Serializable {
     private int quantity;
 
     public Order(String name, double price, int quantity) {
@@ -20,8 +22,9 @@ class Order extends Menu{
         this.quantity = quantity;
     }
     
-    // 주문의 가격을 계산하여 반환합니다.
+    // 주문의 가격을 계산하여 반환
     public double pay() {
         return getPrice() * quantity;
     }
+
 }

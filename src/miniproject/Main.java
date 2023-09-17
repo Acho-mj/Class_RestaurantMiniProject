@@ -5,6 +5,7 @@ import java.util.*;
 public class Main {
 	public static void main(String[] args) {
 		Restaurant restaurant = new Restaurant();
+		RestaurantManager restaurantManager = new RestaurantManager();
         Scanner sc = new Scanner(System.in);
 
         System.out.println("<< 음식점 주문 시스템 >>");
@@ -15,6 +16,7 @@ public class Main {
             System.out.println("3. 주문하기");
             System.out.println("4. 주문 목록 보기");
             System.out.println("5. 체크아웃하기");
+            System.out.println("6. 데이터 저장 및 불러오기");
             System.out.println("0. 종료");
             System.out.print("원하는 작업을 선택하세요: ");
             int choice = sc.nextInt();
@@ -235,7 +237,7 @@ public class Main {
                             throw new IllegalArgumentException("테이블 수용 인원인 " + tableCapacity + "명을 초과하였습니다. 다른 테이블을 선택해주세요.");
                         }
 
-                        break; // 테이블 선택이 완료되면 반복문을 빠져나갑니다.
+                        break; 
                     } catch (IllegalArgumentException | IllegalStateException e) {
                         System.out.println(e.getMessage());
                     }
@@ -290,15 +292,13 @@ public class Main {
                         System.out.print("주문 목록을 확인할 테이블 이름을 입력하세요: ");
                         orderListTableName = sc.nextLine();
 
-                        // 주어진 테이블 이름으로 테이블을 찾습니다.
+                        // 주어진 테이블 이름으로 테이블 조회
                         orderListTable = restaurant.findTableByName(orderListTableName);
 
-                        // 테이블이 존재하지 않는 경우 예외를 발생시킵니다.
+                        // 테이블이 존재하지 않는 경우 예외를 발생
                         if (orderListTable == null) {
                             throw new IllegalArgumentException("존재하지 않는 테이블입니다. 다시 입력해주세요.");
                         }
-
-                        // 유효한 테이블 이름이 입력되었으므로 루프를 종료합니다.
                         break;
                     } catch (IllegalArgumentException e) {
                         System.out.println(e.getMessage());
@@ -340,25 +340,63 @@ public class Main {
                     try {
                         System.out.print("체크아웃할 테이블 이름을 입력하세요: ");
                         checkoutTableName = sc.nextLine();
-                        // 입력된 테이블 이름으로 테이블 객체를 가져옵니다.
+                        // 입력된 테이블 이름으로 테이블 객체저장
                         checkoutTable = restaurant.getTable(checkoutTableName);
 
-                        // 테이블 객체가 null인 경우, 존재하지 않는 테이블 이름입니다.
+                        // 테이블 객체가 null인 경우, 존재하지 않는 테이블 이름임을 출력
                         if (checkoutTable == null) {
                             throw new IllegalArgumentException("존재하지 않는 테이블입니다. 다시 입력해주세요.");
                         }
 
-                        // 체크아웃 후 해당 테이블의 주문 목록을 초기화합니다.
+                        // 체크아웃 후 해당 테이블의 주문 목록 초기화
                         checkoutTable.clearOrderList();
                         System.out.println(checkoutTable.getTableName() + " 테이블이 비었습니다.");
                         break;
                         
                     } catch (IllegalArgumentException e) {
-                        // 예외가 발생한 경우, 존재하지 않는 테이블이므로 에러 메시지를 출력합니다.
                         System.out.println(e.getMessage());
                     }
                 }
                 break;
+                
+                
+            case 6:
+                boolean exitDataMenu = false; // 루프 종료 조건을 위한 변수 추가
+                while (!exitDataMenu) {
+                    System.out.println("\n1. 현재 데이터 저장하기");
+                    System.out.println("2. 저장된 데이터 불러오기");
+                    System.out.println("0. 이전 메뉴로 돌아가기");
+                    System.out.print("원하는 작업을 선택하세요: ");
+                    int dataChoice = sc.nextInt();
+                    sc.nextLine(); // 개행 문자 제거
+
+                    switch (dataChoice) {
+                        // 현재 데이터 저장하기
+                        case 1:
+                            restaurantManager.saveData(restaurant);
+                            break;
+
+                        // 이전 데이터 불러오기
+                        case 2:
+                        	restaurant = restaurantManager.loadData();
+                        	if (restaurant == null) {
+                        	    restaurant = new Restaurant();
+                        	}
+
+                            break;
+
+                        case 0:
+                            exitDataMenu = true; // 루프 종료 조건 설정
+                            break;
+
+                        default:
+                            System.out.println("유효하지 않은 선택입니다. 다시 선택하세요.");
+                            break;
+                    }
+                }          	
+                break;
+
+                
             
             default:
                 System.out.println("유효하지 않은 선택입니다. 다시 선택하세요.");

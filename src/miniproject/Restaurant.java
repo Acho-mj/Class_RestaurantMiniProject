@@ -1,6 +1,9 @@
 package miniproject;
 
-public class Restaurant {
+import java.io.*;
+import java.util.*;
+
+public class Restaurant implements Serializable{
     private Menu[] menuList;
     private Table[] tableList;
 
@@ -82,7 +85,7 @@ public class Restaurant {
         return null;
     }
     
- // 테이블 이름으로 테이블을 찾아 반환합니다.
+    // 테이블 이름으로 테이블을 찾아 반환
     public Table findTableByName(String tableName) {
         for (Table table : tableList) {
             if (table != null && table.getTableName().equals(tableName)) {
@@ -100,5 +103,33 @@ public class Restaurant {
     public Table[] getTableList() {
         return tableList;
     }
+    
+    
+    // 문자열 조립
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("==== 테이블 목록 ==== \n");
+        for (Table table : getTableList()) {
+            if (table != null) { // null 체크
+                sb.append(table.getTableName()).append(" (수용인원: ").append(table.getCapacity()).append(")\n");
+
+                // 테이블 주문 목록 표시
+                Order[] orders = table.getOrderList();
+                double totalPay = table.totalPay();
+                if (orders != null) {
+                    sb.append("   <주문 목록>\n");
+                    for (Order order : orders) {
+                        if (order != null) {
+                            sb.append("    → ").append(order.getMenu().getName()).append(" x")
+                            .append(order.getQuantity()).append(": " + order.getMenu().getPrice() * order.getQuantity()+"원").append("\n");
+                        }
+                    }
+                    sb.append("    총 주문 금액: ").append(totalPay + "원").append("\n\n");
+                }
+            }
+        }
+        return sb.toString();
+    }
+
   
 }

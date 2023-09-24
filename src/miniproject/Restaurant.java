@@ -11,18 +11,33 @@ public class Restaurant{
     private int tableCount;
         
     public Restaurant() {
-    	menuList = new Menu[10]; 
-        tableList = new Table[10];
+    	menuList = new Menu[100]; 
+        tableList = new Table[100];
         menuCount = 0;
         tableCount = 0;
     }
 
     // 메뉴 추가 
     public void addMenu(String name, double price) {
-        Menu menu = new Menu(name, price);
-        menuList[menuCount] = menu;
-        menuCount++;
+        // 배열 크기가 부족한 경우, 현재 크기의 2배인 새로운 배열을 생성
+        if (menuCount >= menuList.length) {
+            int newCapacity = menuList.length * 2;
+            Menu[] newMenuList = new Menu[newCapacity];
+            
+            // 기존 데이터를 새 배열로 복사
+            for (int i = 0; i < menuCount; i++) {
+                newMenuList[i] = menuList[i];
+            }
+            
+            // 새 배열을 기존 배열로 교체
+            menuList = newMenuList;
+            // 새 메뉴 추가
+            Menu menu = new Menu(name, price);
+            menuList[menuCount] = menu;
+            menuCount++;
+        }   
     }
+
     
     // 메뉴 삭제 
     public boolean deleteMenu(String name) {
@@ -52,7 +67,23 @@ public class Restaurant{
     }
 
 
+    // 테이블 추가
     public void addTable(String tableName, int capacity) {
+        // 배열 크기가 부족한 경우, 현재 크기의 2배인 새로운 배열을 생성
+        if (tableCount >= tableList.length) {
+            int newCapacity = tableList.length * 2;
+            Table[] newTableList = new Table[newCapacity];
+            
+            // 기존 데이터를 새 배열로 복사
+            for (int i = 0; i < tableCount; i++) {
+                newTableList[i] = tableList[i];
+            }
+            
+            // 새 배열을 기존 배열로 교체
+            tableList = newTableList;
+        }
+        
+        // 새 테이블 추가
         Table table = new Table(tableName, capacity);
         tableList[tableCount] = table;
         tableCount++;
@@ -172,34 +203,18 @@ public class Restaurant{
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-//         // 데이터를 콘솔에 출력
-//         System.out.println("==== 메뉴 목록 ====");
-//         for (Menu menu : menuList) {
-//        	 if (menu != null) {
-//        		 System.out.println(menu); // Menu 클래스의 toString() 메서드를 사용하여 출력
-//             }
-//         }
-//
-//         System.out.println("\n==== 테이블 목록 ====");
-//         for (Table table : tableList) {
-//        	 if (table != null) {
-//    		   System.out.println(table); // Table 클래스의 toString() 메서드를 사용하여 출력
-//        	 }
-//         }	
     }
-
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("==== 메뉴 목록 ====\n");
+        sb.append("\n==== 메뉴 목록 ====\n");
         for (Menu menu : getMenuList()) {
             if (menu != null) { // null 체크
                 sb.append("메뉴 이름: ").append(menu.getName()).append(", 가격: ").append(menu.getPrice()).append("원\n");
             }
         }
-        sb.append("==== 테이블 목록 ==== \n");
+        sb.append("\n==== 테이블 목록 ==== \n");
         for (Table table : getTableList()) {
             if (table != null) { // null 체크
                 sb.append(table.getTableName()).append(" (수용인원: ").append(table.getCapacity()).append(")\n");
@@ -215,7 +230,7 @@ public class Restaurant{
                             .append(order.getQuantity()).append(": " + order.getMenu().getPrice() * order.getQuantity()+"원").append("\n");
                         }
                     }
-                    sb.append("    총 주문 금액: ").append(totalPay + "원").append("\n\n");
+                    sb.append("    총 주문 금액: ").append(totalPay + "원\n").append("\n");
                 }
             }
         }

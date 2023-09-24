@@ -56,7 +56,6 @@ public class Main {
                         	        System.out.print("추가할 메뉴의 가격을 입력하세요: ");
                         	        double menuPrice = sc.nextDouble();
                         	        sc.nextLine();
-
                         	        restaurant.addMenu(menuName, menuPrice);
                         	        System.out.println(menuName + " 메뉴가 추가되었습니다.");
                         	        break;
@@ -379,9 +378,8 @@ public class Main {
 
                         // 이전 데이터 불러오기
                         case 2:
-                        	Restaurant loadedRestaurant = new Restaurant();
-                        	loadedRestaurant.loadFile(filename);
-                        	System.out.println(loadedRestaurant);
+                        	restaurant.loadFile(filename);
+                            System.out.println(restaurant);
                             break;
 
                         case 0:

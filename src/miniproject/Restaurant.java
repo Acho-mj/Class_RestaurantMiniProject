@@ -3,27 +3,41 @@ package miniproject;
 import java.io.*;
 import java.util.*;
 
-public class Restaurant implements Serializable{
+public class Restaurant{
     private Menu[] menuList;
     private Table[] tableList;
 
     private int menuCount;
     private int tableCount;
-    
-    
+        
     public Restaurant() {
-    	menuList = new Menu[10]; 
-        tableList = new Table[10];
+    	menuList = new Menu[100]; 
+        tableList = new Table[100];
         menuCount = 0;
         tableCount = 0;
     }
 
     // 메뉴 추가 
     public void addMenu(String name, double price) {
-        Menu menu = new Menu(name, price);
-        menuList[menuCount] = menu;
-        menuCount++;
+        // 배열 크기가 부족한 경우, 현재 크기의 2배인 새로운 배열을 생성
+        if (menuCount >= menuList.length) {
+            int newCapacity = menuList.length * 2;
+            Menu[] newMenuList = new Menu[newCapacity];
+            
+            // 기존 데이터를 새 배열로 복사
+            for (int i = 0; i < menuCount; i++) {
+                newMenuList[i] = menuList[i];
+            }
+            
+            // 새 배열을 기존 배열로 교체
+            menuList = newMenuList;
+            // 새 메뉴 추가
+            Menu menu = new Menu(name, price);
+            menuList[menuCount] = menu;
+            menuCount++;
+        }   
     }
+
     
     // 메뉴 삭제 
     public boolean deleteMenu(String name) {
@@ -53,7 +67,23 @@ public class Restaurant implements Serializable{
     }
 
 
+    // 테이블 추가
     public void addTable(String tableName, int capacity) {
+        // 배열 크기가 부족한 경우, 현재 크기의 2배인 새로운 배열을 생성
+        if (tableCount >= tableList.length) {
+            int newCapacity = tableList.length * 2;
+            Table[] newTableList = new Table[newCapacity];
+            
+            // 기존 데이터를 새 배열로 복사
+            for (int i = 0; i < tableCount; i++) {
+                newTableList[i] = tableList[i];
+            }
+            
+            // 새 배열을 기존 배열로 교체
+            tableList = newTableList;
+        }
+        
+        // 새 테이블 추가
         Table table = new Table(tableName, capacity);
         tableList[tableCount] = table;
         tableCount++;
@@ -104,11 +134,87 @@ public class Restaurant implements Serializable{
         return tableList;
     }
     
-    
-    // 문자열 조립
+    // 객체를 파일로 출력
+    public void saveFile(String filename) {
+        try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(filename))) {
+            // 메뉴 목록 저장
+            dos.writeInt(menuCount);
+            for (int i = 0; i < menuCount; i++) {
+                menuList[i].saveMenu(dos);
+            }
+
+            // 테이블 목록 저장
+            dos.writeInt(tableCount);
+            for (int i = 0; i < tableCount; i++) {
+                tableList[i].saveTable(dos);
+            }
+
+            // 주문 목록 저장
+            for (int i = 0; i < tableCount; i++) {
+                Table table = tableList[i];
+                if (table != null && table.getOrderCount() > 0) {
+                    table.saveOrderList(dos);
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 파일에서 객체로 읽어오기
+    public void loadFile(String filename) {
+        try (DataInputStream dis = new DataInputStream(new FileInputStream(filename))) {
+            int loadedMenuCount = dis.readInt();
+            menuCount = loadedMenuCount;
+
+            // 메뉴 객체들을 다시 배열에 저장
+            menuList = new Menu[loadedMenuCount];
+            for (int i = 0; i < loadedMenuCount; i++) {
+                menuList[i] = Menu.loadMenu(dis);
+            }
+
+            int loadedTableCount = dis.readInt();
+            tableCount = loadedTableCount;
+
+            // 테이블 객체들을 다시 배열에 저장
+            tableList = new Table[loadedTableCount];
+            for (int i = 0; i < loadedTableCount; i++) {
+                tableList[i] = Table.loadTable(dis, this);
+            }
+
+            // 주문 목록 읽어오기
+            for (int i = 0; i < tableCount; i++) {
+                int orderCount = dis.readInt(); // 주문 수량 읽어오기
+                Table table = tableList[i];
+                if (table != null) {
+                    for (int j = 0; j < orderCount; j++) {
+                        Order order = Order.loadOrder(dis);
+                        table.addOrder(order); // 주문을 테이블의 주문 목록에 추가
+                    }
+                }
+            }
+        } catch (EOFException e) {
+            // EOFException 처리
+            System.out.println("파일의 끝에 도달했습니다.");
+        } catch (FileNotFoundException e) {
+            // 파일이 존재하지 않는 경우에 대한 예외 처리
+            System.out.println("데이터 파일이 존재하지 않습니다.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("==== 테이블 목록 ==== \n");
+        sb.append("\n==== 메뉴 목록 ====\n");
+        for (Menu menu : getMenuList()) {
+            if (menu != null) { // null 체크
+                sb.append("메뉴 이름: ").append(menu.getName()).append(", 가격: ").append(menu.getPrice()).append("원\n");
+            }
+        }
+        sb.append("\n==== 테이블 목록 ==== \n");
         for (Table table : getTableList()) {
             if (table != null) { // null 체크
                 sb.append(table.getTableName()).append(" (수용인원: ").append(table.getCapacity()).append(")\n");
@@ -124,12 +230,10 @@ public class Restaurant implements Serializable{
                             .append(order.getQuantity()).append(": " + order.getMenu().getPrice() * order.getQuantity()+"원").append("\n");
                         }
                     }
-                    sb.append("    총 주문 금액: ").append(totalPay + "원").append("\n\n");
+                    sb.append("    총 주문 금액: ").append(totalPay + "원\n").append("\n");
                 }
             }
         }
         return sb.toString();
     }
-
-  
 }

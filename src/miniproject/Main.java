@@ -5,7 +5,8 @@ import java.util.*;
 public class Main {
 	public static void main(String[] args) {
 		Restaurant restaurant = new Restaurant();
-		RestaurantManager restaurantManager = new RestaurantManager();
+		String filename = "restaurant.dat";
+		
         Scanner sc = new Scanner(System.in);
 
         System.out.println("<< 음식점 주문 시스템 >>");
@@ -55,7 +56,6 @@ public class Main {
                         	        System.out.print("추가할 메뉴의 가격을 입력하세요: ");
                         	        double menuPrice = sc.nextDouble();
                         	        sc.nextLine();
-
                         	        restaurant.addMenu(menuName, menuPrice);
                         	        System.out.println(menuName + " 메뉴가 추가되었습니다.");
                         	        break;
@@ -368,21 +368,18 @@ public class Main {
                     System.out.println("0. 이전 메뉴로 돌아가기");
                     System.out.print("원하는 작업을 선택하세요: ");
                     int dataChoice = sc.nextInt();
-                    sc.nextLine(); // 개행 문자 제거
+                    sc.nextLine(); // 개행 문자 제거         
 
                     switch (dataChoice) {
                         // 현재 데이터 저장하기
                         case 1:
-                            restaurantManager.saveData(restaurant);
+                            restaurant.saveFile(filename);
                             break;
 
                         // 이전 데이터 불러오기
                         case 2:
-                        	restaurant = restaurantManager.loadData();
-                        	if (restaurant == null) {
-                        	    restaurant = new Restaurant();
-                        	}
-
+                        	restaurant.loadFile(filename);
+                            System.out.println(restaurant);
                             break;
 
                         case 0:
@@ -395,9 +392,7 @@ public class Main {
                     }
                 }          	
                 break;
-
-                
-            
+                      
             default:
                 System.out.println("유효하지 않은 선택입니다. 다시 선택하세요.");
                 break;

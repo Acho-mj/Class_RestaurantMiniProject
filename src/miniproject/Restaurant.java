@@ -3,14 +3,13 @@ package miniproject;
 import java.io.*;
 import java.util.*;
 
-public class Restaurant implements Serializable{
+public class Restaurant{
     private Menu[] menuList;
     private Table[] tableList;
 
     private int menuCount;
     private int tableCount;
-    
-    
+        
     public Restaurant() {
     	menuList = new Menu[10]; 
         tableList = new Table[10];
@@ -104,10 +103,102 @@ public class Restaurant implements Serializable{
         return tableList;
     }
     
-    
-    // 문자열 조립
+    // 객체를 파일로 출력
+    public void saveFile(String filename) {
+        try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(filename))) {
+            // 메뉴 목록 저장
+            dos.writeInt(menuCount);
+            for (int i = 0; i < menuCount; i++) {
+                menuList[i].saveMenu(dos);
+            }
+
+            // 테이블 목록 저장
+            dos.writeInt(tableCount);
+            for (int i = 0; i < tableCount; i++) {
+                tableList[i].saveTable(dos);
+            }
+
+            // 주문 목록 저장
+            for (int i = 0; i < tableCount; i++) {
+                Table table = tableList[i];
+                if (table != null && table.getOrderCount() > 0) {
+                    table.saveOrderList(dos);
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 파일에서 객체로 읽어오기
+    public void loadFile(String filename) {
+        try (DataInputStream dis = new DataInputStream(new FileInputStream(filename))) {
+            int loadedMenuCount = dis.readInt();
+            menuCount = loadedMenuCount;
+
+            // 메뉴 객체들을 다시 배열에 저장
+            menuList = new Menu[loadedMenuCount];
+            for (int i = 0; i < loadedMenuCount; i++) {
+                menuList[i] = Menu.loadMenu(dis);
+            }
+
+            int loadedTableCount = dis.readInt();
+            tableCount = loadedTableCount;
+
+            // 테이블 객체들을 다시 배열에 저장
+            tableList = new Table[loadedTableCount];
+            for (int i = 0; i < loadedTableCount; i++) {
+                tableList[i] = Table.loadTable(dis, this);
+            }
+
+            // 주문 목록 읽어오기
+            for (int i = 0; i < tableCount; i++) {
+                int orderCount = dis.readInt(); // 주문 수량 읽어오기
+                Table table = tableList[i];
+                if (table != null) {
+                    for (int j = 0; j < orderCount; j++) {
+                        Order order = Order.loadOrder(dis);
+                        table.addOrder(order); // 주문을 테이블의 주문 목록에 추가
+                    }
+                }
+            }
+        } catch (EOFException e) {
+            // EOFException 처리
+            System.out.println("파일의 끝에 도달했습니다.");
+        } catch (FileNotFoundException e) {
+            // 파일이 존재하지 않는 경우에 대한 예외 처리
+            System.out.println("데이터 파일이 존재하지 않습니다.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+//         // 데이터를 콘솔에 출력
+//         System.out.println("==== 메뉴 목록 ====");
+//         for (Menu menu : menuList) {
+//        	 if (menu != null) {
+//        		 System.out.println(menu); // Menu 클래스의 toString() 메서드를 사용하여 출력
+//             }
+//         }
+//
+//         System.out.println("\n==== 테이블 목록 ====");
+//         for (Table table : tableList) {
+//        	 if (table != null) {
+//    		   System.out.println(table); // Table 클래스의 toString() 메서드를 사용하여 출력
+//        	 }
+//         }	
+    }
+
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
+        sb.append("==== 메뉴 목록 ====\n");
+        for (Menu menu : getMenuList()) {
+            if (menu != null) { // null 체크
+                sb.append("메뉴 이름: ").append(menu.getName()).append(", 가격: ").append(menu.getPrice()).append("원\n");
+            }
+        }
         sb.append("==== 테이블 목록 ==== \n");
         for (Table table : getTableList()) {
             if (table != null) { // null 체크
@@ -130,6 +221,4 @@ public class Restaurant implements Serializable{
         }
         return sb.toString();
     }
-
-  
 }

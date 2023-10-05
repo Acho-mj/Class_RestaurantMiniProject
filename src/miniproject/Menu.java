@@ -10,6 +10,9 @@ class Menu{
         this.name = name;
         this.price = price;
     }
+    public Menu() {
+        // 기본 생성자
+    }
 
     public String getName() {
         return name;
@@ -26,7 +29,7 @@ class Menu{
     }
 
     // 파일에서 Menu 객체를 읽어오기
-    public static Menu loadMenu(DataInputStream dis) throws IOException {
+    public Menu loadMenu(DataInputStream dis) throws IOException {
         String name = dis.readUTF(); // 메뉴 이름 읽어오기
         double price = dis.readDouble(); // 메뉴 가격 읽어오기
         return new Menu(name, price);
@@ -34,12 +37,12 @@ class Menu{
     
     // equals 정의할 것
     public boolean equals(Menu m) {
-        if (this.getName().equals(m.getName())) {
-            return true;
-        } else {
+        if (this.getName() == null || m.getName() == null) {
             return false;
         }
+        return this.getName().equals(m.getName());
     }
+
     
     @Override
     public String toString() {

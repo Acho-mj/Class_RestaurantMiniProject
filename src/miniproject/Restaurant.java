@@ -135,8 +135,8 @@ public class Restaurant{
     }
     
     // 객체를 파일로 출력
-    public void saveFile(String filename) {
-        try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(filename))) {
+    public void saveFile(File file) {
+        try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(file))) {
             // 메뉴 목록 저장
             dos.writeInt(menuCount);
             for (int i = 0; i < menuCount; i++) {
@@ -154,8 +154,8 @@ public class Restaurant{
     }
 
     // 파일에서 객체로 읽어오기
-    public void loadFile(String filename) {
-        try (DataInputStream dis = new DataInputStream(new FileInputStream(filename))) {
+    public void loadFile(File file) {
+        try (DataInputStream dis = new DataInputStream(new FileInputStream(file))) {
             int loadedMenuCount = dis.readInt();
 
             // 메뉴 객체들을 다시 배열에 저장

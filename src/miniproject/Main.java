@@ -1,12 +1,13 @@
 package miniproject;
 
 import java.util.*;
+import java.io.File;
 
 public class Main {
 	public static void main(String[] args) {
 		Restaurant restaurant = new Restaurant();
-		String filename = "restaurant.dat";
-		restaurant.loadFile(filename);
+		File file = new File("restaurant.dat"); // 파일 객체 생성
+        restaurant.loadFile(file);
 		
         Scanner sc = new Scanner(System.in);
 
@@ -373,7 +374,7 @@ public class Main {
                     switch (dataChoice) {
                         // 현재 데이터 저장하기
                         case 1:
-                            restaurant.saveFile(filename);
+                            restaurant.saveFile(file);
                             break;
 
                         case 0:

@@ -6,6 +6,7 @@ public class Main {
 	public static void main(String[] args) {
 		Restaurant restaurant = new Restaurant();
 		String filename = "restaurant.dat";
+		restaurant.loadFile(filename);
 		
         Scanner sc = new Scanner(System.in);
 
@@ -364,7 +365,6 @@ public class Main {
                 boolean exitDataMenu = false; // 루프 종료 조건을 위한 변수 추가
                 while (!exitDataMenu) {
                     System.out.println("\n1. 현재 데이터 저장하기");
-                    System.out.println("2. 저장된 데이터 불러오기");
                     System.out.println("0. 이전 메뉴로 돌아가기");
                     System.out.print("원하는 작업을 선택하세요: ");
                     int dataChoice = sc.nextInt();
@@ -374,12 +374,6 @@ public class Main {
                         // 현재 데이터 저장하기
                         case 1:
                             restaurant.saveFile(filename);
-                            break;
-
-                        // 이전 데이터 불러오기
-                        case 2:
-                        	restaurant.loadFile(filename);
-                            System.out.println(restaurant);
                             break;
 
                         case 0:

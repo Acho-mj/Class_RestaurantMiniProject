@@ -15,6 +15,10 @@ class Table {
         this.orderCount = 0;
     }
     
+    public Table() {
+        // 기본 생성자
+    }
+    
     public String getTableName() {
         return tableName;
     }
@@ -83,7 +87,7 @@ class Table {
         }
     }
     
-    public static Table loadTable(DataInputStream dis, Restaurant restaurant) throws IOException {
+    public Table loadTable(DataInputStream dis, Restaurant restaurant) throws IOException {
         String tableName = dis.readUTF(); // 테이블 이름 읽어오기
         int capacity = dis.readInt(); // 수용 인원 읽어오기
         int orderCount = dis.readInt(); // 주문 수 읽어오기
@@ -98,34 +102,14 @@ class Table {
 
         // 주문 목록 읽어오기
         for (int i = 0; i < orderCount; i++) {
-            Order order = Order.loadOrder(dis);
+            Order order = new Order(); // Order 인스턴스 생성
+            order.loadOrder(dis); // loadOrder 호출
             table.addOrder(order); // 주문 추가
         }
 
         return table;
     }
     
-    // 주문 목록을 파일에 저장하는 메서드
-    public void saveOrderList(DataOutputStream dos) throws IOException {
-        dos.writeInt(orderCount); // 주문 수량 저장
-
-        // 주문 목록에 있는 각 주문을 파일에 저장
-        for (int i = 0; i < orderCount; i++) {
-            orderList[i].saveOrder(dos);
-        }
-    }
-
-
-    public void loadOrderList(DataInputStream dis) throws IOException {
-        // 주문 정보를 데이터 스트림에서 읽어와서 주문 목록에 추가
-        int loadedOrderCount = dis.readInt();
-        orderCount = loadedOrderCount; // 주문 수 업데이트
-        for (int i = 0; i < loadedOrderCount; i++) {
-            orderList[i] = Order.loadOrder(dis);
-        }
-    }
-    
-
     // equals 정의할 것
     public boolean equals(Table t) {
     	if (this.tableName == t.getTableName())

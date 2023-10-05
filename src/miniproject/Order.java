@@ -10,6 +10,10 @@ class Order extends Menu {
         this.quantity = quantity;
     }
     
+    public Order() {
+        // 기본 생성자
+    }
+    
     public Menu getMenu() {
         return this;
     }
@@ -35,7 +39,7 @@ class Order extends Menu {
     }
 
     // 파일에서 Order 객체를 읽어오기
-    public static Order loadOrder(DataInputStream dis) throws IOException {
+    public Order loadOrder(DataInputStream dis) throws IOException {
         String name = dis.readUTF(); // 메뉴 이름 읽어오기
         double price = dis.readDouble(); // 메뉴 가격 읽어오기
         int quantity = dis.readInt(); // 수량 읽어오기

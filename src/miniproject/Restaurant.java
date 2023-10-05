@@ -148,15 +148,6 @@ public class Restaurant{
             for (int i = 0; i < tableCount; i++) {
                 tableList[i].saveTable(dos);
             }
-
-            // 주문 목록 저장
-            for (int i = 0; i < tableCount; i++) {
-                Table table = tableList[i];
-                if (table != null && table.getOrderCount() > 0) {
-                    table.saveOrderList(dos);
-                }
-            }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -166,40 +157,24 @@ public class Restaurant{
     public void loadFile(String filename) {
         try (DataInputStream dis = new DataInputStream(new FileInputStream(filename))) {
             int loadedMenuCount = dis.readInt();
-            menuCount = loadedMenuCount;
 
             // 메뉴 객체들을 다시 배열에 저장
             menuList = new Menu[loadedMenuCount];
             for (int i = 0; i < loadedMenuCount; i++) {
-                menuList[i] = Menu.loadMenu(dis);
+                menuList[i] = new Menu().loadMenu(dis); // Menu 인스턴스 생성 후 loadMenu 호출
             }
 
             int loadedTableCount = dis.readInt();
-            tableCount = loadedTableCount;
 
             // 테이블 객체들을 다시 배열에 저장
             tableList = new Table[loadedTableCount];
             for (int i = 0; i < loadedTableCount; i++) {
-                tableList[i] = Table.loadTable(dis, this);
-            }
-
-            // 주문 목록 읽어오기
-            for (int i = 0; i < tableCount; i++) {
-                int orderCount = dis.readInt(); // 주문 수량 읽어오기
-                Table table = tableList[i];
-                if (table != null) {
-                    for (int j = 0; j < orderCount; j++) {
-                        Order order = Order.loadOrder(dis);
-                        table.addOrder(order); // 주문을 테이블의 주문 목록에 추가
-                    }
-                }
+                tableList[i] = new Table().loadTable(dis, this); // Table 인스턴스 생성 후 loadTable 호출
             }
         } catch (EOFException e) {
-            // EOFException 처리
-            System.out.println("파일의 끝에 도달했습니다.");
+            System.out.println("파일 끝");
         } catch (FileNotFoundException e) {
-            // 파일이 존재하지 않는 경우에 대한 예외 처리
-            System.out.println("데이터 파일이 존재하지 않습니다.");
+            System.out.println("데이터 파일 존재X");
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -5,9 +5,36 @@ import java.io.File;
 
 public class Main {
 	public static void main(String[] args) {
+		Scanner fileScan = new Scanner(System.in);
 		Restaurant restaurant = new Restaurant();
 		File file = new File("restaurant.dat"); // 파일 객체 생성
-        restaurant.loadFile(file);
+		// 파일 불러오기
+        try {
+            if (!file.exists()) {
+                // 파일이 존재하지 않을 경우, 사용자에게 생성 여부 묻기
+                System.out.print("파일이 존재하지 않습니다. 최초 수행인가요? (Y/N): ");
+                String createFileChoice = fileScan.nextLine().trim();
+
+                if (createFileChoice.equalsIgnoreCase("N")) {
+                    System.out.println("파일이 없음. 프로그램을 종료합니다.");
+                    fileScan.close();
+                    return;
+                } else if (createFileChoice.equalsIgnoreCase("Y")) {
+                    if (file.createNewFile()) {
+                        System.out.println("파일이 생성되었습니다.");
+                    } else {
+                        System.out.println("파일 생성 중 오류가 발생했습니다.");
+                        fileScan.close();
+                        return;
+                    }
+                }
+            }
+            // 파일이 존재할 경우 데이터 불러오기
+            restaurant.loadFile(file);
+        } catch (Exception e) {
+            System.out.println("파일 불러오기 또는 생성 중 오류가 발생했습니다.");
+            e.printStackTrace();
+        }
 		
         Scanner sc = new Scanner(System.in);
 
@@ -97,12 +124,10 @@ public class Main {
                         // 메뉴 목록 출력
                         case 3:
                             System.out.println("\n=== 메뉴 목록 ===");
-                            Menu[] menuList = restaurant.getMenuList();
-                            for (int i = 0; i < menuList.length; i++) {
-                                Menu menu = menuList[i];
-                                if (menu != null) {
-                                    System.out.println(i + 1 + ". " + menu.getName() + " : " + menu.getPrice());
-                                }
+                            ArrayList<Menu> menuList = restaurant.getMenuList();
+                            for (int i = 0; i < menuList.size(); i++) {
+                                Menu menu = menuList.get(i);
+                                System.out.println(i + 1 + ". " + menu.getName() + " : " + menu.getPrice());
                             }
                             break;
                         
@@ -187,9 +212,9 @@ public class Main {
                         // 테이블 목록 출력
                         case 3:
                             System.out.println("\n=== 테이블 목록 ===");
-                            Table[] tableList = restaurant.getTableList();
-                            for (int i = 0; i < tableList.length; i++) {
-                                Table table = tableList[i];
+                            ArrayList<Table> tableList = restaurant.getTableList();
+                            for (int i = 0; i < tableList.size(); i++) {
+                                Table table = tableList.get(i);
                                 if (table != null) {
                                     System.out.println(i + 1 + ". " + table.getTableName() + " : " + table.getCapacity());
                                 }
@@ -314,7 +339,7 @@ public class Main {
                     System.out.println("메뉴\t가격\t수량\t금액");
                     System.out.println("------------------------------------");
                     
-                    Order[] orders = orderListTable.getOrderList();
+                    ArrayList<Order> orders = orderListTable.getOrderList();
                     double totalPrice = orderListTable.totalPay(); 
 
                     for (Order order : orders) {

@@ -1,18 +1,18 @@
 package miniproject;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 class Table {
-    private Order[] orderList;	//주문 목록을 배열 형태로 저장
-    private int orderCount;	//주문 수 저장
-    private String tableName;  //테이블 이름
-    private int capacity; // 테이블 수용인원
-    
+	private String tableName;
+    private int capacity;
+    private ArrayList<Order> orderList; // 주문 목록을 ArrayList로 변경
+
     public Table(String tableName, int capacity) {
         this.tableName = tableName;
         this.capacity = capacity;
-        this.orderList = new Order[100];
-        this.orderCount = 0;
+        this.orderList = new ArrayList<>(); // ArrayList로 초기화
     }
     
     public Table() {
@@ -32,46 +32,43 @@ class Table {
         int quantity = order.getQuantity();
 
         // 이미 주문된 메뉴인지 확인하고, 중복된 경우 해당 메뉴의 주문 수량을 누적
-        for (int i = 0; i < orderCount; i++) {
-            if (orderList[i].getMenu().equals(menu)) {
-                orderList[i].setQuantity(orderList[i].getQuantity() + quantity);
+        for (Order existingOrder : orderList) {
+            if (existingOrder.getMenu().equals(menu)) {
+                existingOrder.setQuantity(existingOrder.getQuantity() + quantity);
                 return;
             }
         }
 
         // 중복된 메뉴가 없는 경우 새로운 주문을 추가
-        orderList[orderCount] = order;
-        orderCount++;
+        orderList.add(order);
     }
+
     
     // 각 테이블의 주문 수 반환
     public int getOrderCount() {
-        return orderCount;
+        return orderList.size(); // 주문 수를 List의 크기로 반환
     }
 
-    public Order[] getOrderList() {
+    public ArrayList<Order> getOrderList() {
         return orderList;
     }
     
     public void clearOrderList() {
-        orderList = new Order[100];
-        orderCount = 0;
+        orderList = new ArrayList<Order>();
     }
-    
+
     public boolean availableTables() {
-    	return orderCount > 0;
+        return !orderList.isEmpty(); // 주문 목록이 비어있지 않으면 true 반환
     }
     
     // 주문 목록의 총 결제 금액을 계산하여 반환
     public double totalPay() {
         double total = 0.0;
-        Order[] orders = getOrderList(); 
-        
-        for (Order order : orders) {
-            if (order != null) {
-                total += order.pay();
-            }
+
+        for (Order order : orderList) {
+            total += order.pay();
         }
+
         return total;
     }
     
@@ -81,9 +78,9 @@ class Table {
         dos.writeInt(capacity); // 수용 인원 저장
         
         // 주문 정보 저장
-        dos.writeInt(orderCount); // 현재 주문 수 저장
-        for (int i = 0; i < orderCount; i++) {
-            orderList[i].saveOrder(dos);
+        dos.writeInt(orderList.size()); // 현재 주문 수 저장
+        for (Order order : orderList) {
+        	order.saveOrder(dos);
         }
     }
     
@@ -123,19 +120,12 @@ class Table {
         StringBuilder sb = new StringBuilder();
         sb.append("테이블 이름: ").append(getTableName()).append(" (수용인원: ").append(getCapacity()).append(")\n");
 
-        // 테이블 주문 목록 표시
-        Order[] orders = getOrderList();
-        double totalPay = totalPay();
-        if (orders != null) {
-            sb.append("   <주문 목록>\n");
-            for (Order order : orders) {
-                if (order != null) {
-                    sb.append("    → ").append(order.getMenu().getName()).append(" x")
-                    .append(order.getQuantity()).append(": " + order.getMenu().getPrice() * order.getQuantity()+"원").append("\n");
-                }
-            }
-            sb.append("    총 주문 금액: ").append(totalPay + "원").append("\n\n");
+        for (Order order : orderList) {
+            sb.append("    → ").append(order.getMenu().getName()).append(" x")
+                    .append(order.getQuantity()).append(": " + order.pay() + "원").append("\n");
         }
+
+        sb.append("    총 주문 금액: ").append(totalPay() + "원").append("\n\n");
 
         return sb.toString();
     }

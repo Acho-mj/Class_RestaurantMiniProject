@@ -2,7 +2,6 @@ package miniproject;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
 
 class Table {
 	private String tableName;
@@ -16,7 +15,7 @@ class Table {
     }
     
     public Table() {
-        // 기본 생성자
+    	orderList = new ArrayList<>();
     }
     
     public String getTableName() {
@@ -72,48 +71,49 @@ class Table {
         return total;
     }
     
+    // 오더 객체를 파일에 출력
+ 	void saveOrder(DataOutputStream dos) throws Exception{
+ 		dos.writeInt(orderList.size());	// 오더 수 
+ 		// 반복을 통해 menus[]에 저장된 메뉴 객체들의 요소를 프리미티브 타입으로 파일에 출력
+ 		for (int i=0; i<orderList.size(); i++) {
+ 			orderList.get(i).saveOrder(dos);
+ 		}
+ 	}
+ 		
+ 	// 저장된 테이블 객체 정보 입력
+ 	void loadOrder(DataInputStream dis) throws Exception{
+ 		int orderSize = dis.readInt();	// 주문 메뉴 종류 수 
+ 		// 반복을 통해 파일에 저장된 오더 객체 정보를 새로운 오더 객체를 생성하여 정보 입력 후 orders[]에 추가
+ 		for (int i=0; i<orderSize; i++) {
+ 			Order order = new Order();	// 오더 객체 생성
+ 			order.loadOrder(dis);	// 오더 정보 입력
+ 			orderList.add(order);	// 오더 배열에 추가
+ 		}
+ 	}
+    
     // Table 객체를 파일로 저장
-    public void saveTable(DataOutputStream dos) throws IOException {
+    public void saveTable(DataOutputStream dos) throws Exception {
         dos.writeUTF(tableName); // 테이블 이름 저장
         dos.writeInt(capacity); // 수용 인원 저장
-        
-        // 주문 정보 저장
-        dos.writeInt(orderList.size()); // 현재 주문 수 저장
-        for (Order order : orderList) {
-        	order.saveOrder(dos);
-        }
+        saveOrder(dos);
     }
     
-    public Table loadTable(DataInputStream dis, Restaurant restaurant) throws IOException {
-        String tableName = dis.readUTF(); // 테이블 이름 읽어오기
-        int capacity = dis.readInt(); // 수용 인원 읽어오기
-        int orderCount = dis.readInt(); // 주문 수 읽어오기
-
-        // 레스토랑 객체에서 해당 테이블 이름을 가진 테이블 찾기
-        Table table = restaurant.findTableByName(tableName);
-
-        if (table == null) {
-            // 테이블이 null인 경우, 새로운 테이블 객체 생성
-            table = new Table(tableName, capacity);
-        }
-
-        // 주문 목록 읽어오기
-        for (int i = 0; i < orderCount; i++) {
-            Order order = new Order(); // Order 인스턴스 생성
-            order.loadOrder(dis); // loadOrder 호출
-            table.addOrder(order); // 주문 추가
-        }
-
-        return table;
+    public void loadTable(DataInputStream dis) throws Exception {
+        tableName = dis.readUTF(); // 테이블 이름 읽어오기
+        capacity = dis.readInt(); // 수용 인원 읽어오기
+        loadOrder(dis);
     }
     
-    // equals 정의할 것
-    public boolean equals(Table t) {
-    	if (this.tableName == t.getTableName())
-    		return true;
-    	else
-    		return false;
-    }
+    // equals함수 재정의
+ 	public boolean equals(Object object) {
+ 		Table table = (Table) object;
+ 		// 만약 같으면, true를 
+ 	    if (this.tableName.equals(table.getTableName()))
+ 	    	return true;
+ 	    // 다르면 false를 반환 
+ 	    else
+ 	    	return false;
+ 	    }
     
     @Override
     public String toString() {

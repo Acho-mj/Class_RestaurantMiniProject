@@ -1,14 +1,16 @@
 package miniproject;
 
 import java.util.*;
-import java.io.File;
+import java.io.*;
 
 public class Main {
 	public static void main(String[] args) {
 		Scanner fileScan = new Scanner(System.in);
-		Restaurant restaurant = new Restaurant();
-		File file = new File("restaurant.dat"); // 파일 객체 생성
-		// 파일 불러오기
+	    Restaurant restaurant = null;
+	    DataInputStream in = null;
+	    String fileName = "restaurant.dat";
+	    File file = new File(fileName);
+
         try {
             if (!file.exists()) {
                 // 파일이 존재하지 않을 경우, 사용자에게 생성 여부 묻기
@@ -30,7 +32,7 @@ public class Main {
                 }
             }
             // 파일이 존재할 경우 데이터 불러오기
-            restaurant.loadFile(file);
+            restaurant = new Restaurant(file);
         } catch (Exception e) {
             System.out.println("파일 불러오기 또는 생성 중 오류가 발생했습니다.");
             e.printStackTrace();
@@ -399,7 +401,13 @@ public class Main {
                     switch (dataChoice) {
                         // 현재 데이터 저장하기
                         case 1:
-                            restaurant.saveFile(file);
+                        	try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(fileName))) {
+                                restaurant.saveFile(dos); // 데이터를 파일에 저장
+                                System.out.println("데이터 저장이 완료되었습니다.");
+                            } catch (Exception e) {
+                                System.out.println("파일 저장에 오류가 발생했습니다.");
+                                e.printStackTrace();
+                            }
                             break;
 
                         case 0:

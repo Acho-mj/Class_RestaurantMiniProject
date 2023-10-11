@@ -23,20 +23,27 @@ public class Restaurant {
 
     // 메뉴 추가
     public void addMenu(String name, double price) {
+    	// 이미 존재하는 메뉴인지 확인
+        if (getMenu(name) != null) {
+            throw new IllegalArgumentException("이미 존재하는 메뉴 이름입니다. 다른 이름을 입력해주세요.");
+        }
         Menu menu = new Menu(name, price);
         menuList.add(menu);
     }
 
     // 메뉴 삭제
-    public boolean deleteMenu(String name) {
-        for (Menu menu : menuList) {
-            if (menu.getName().equals(name)) {
-                menuList.remove(menu);
-                return true;
-            }
+    public void deleteMenu(String deleteMenuName) {
+        Menu menuToDelete = getMenu(deleteMenuName);
+
+        if (menuToDelete == null) {
+            throw new IllegalArgumentException("존재하지 않는 메뉴 이름입니다. 다른 이름을 입력해주세요.");
         }
-        return false;
+
+        if (!menuList.remove(menuToDelete)) {
+            throw new IllegalStateException("메뉴 삭제에 실패했습니다.");
+        }
     }
+
 
     // 메뉴 가져오기
     public Menu getMenu(String name) {
@@ -50,20 +57,28 @@ public class Restaurant {
 
     // 테이블 추가
     public void addTable(String tableName, int capacity) {
-        Table table = new Table(tableName, capacity);
-        tableList.add(table);
+    	Table existingTable = getTable(tableName);
+        if (existingTable != null) {
+            throw new IllegalArgumentException("이미 존재하는 테이블입니다. 다시 입력해주세요.");
+        }
+
+        Table newTable = new Table(tableName, capacity);
+        tableList.add(newTable);
     }
 
     // 테이블 삭제
-    public boolean deleteTable(String name) {
-        for (Table table : tableList) {
-            if (table.getTableName().equals(name)) {
-                tableList.remove(table);
-                return true;
-            }
+    public void deleteTable(String removeTableName) {
+        Table tableToRemove = getTable(removeTableName);
+
+        if (tableToRemove == null) {
+            throw new IllegalArgumentException("존재하지 않는 테이블 이름입니다. 다른 이름을 입력해주세요.");
         }
-        return false;
+
+        if (!tableList.remove(tableToRemove)) {
+            throw new IllegalStateException("테이블 삭제에 실패했습니다.");
+        }
     }
+
 
     // 테이블 가져오기
     public Table getTable(String tableName) {
@@ -85,6 +100,39 @@ public class Restaurant {
         return null;
     }
     
+    
+    // 주문하기
+    public void takeOrder(Table table, Menu orderMenu, int quantity) {
+        if (table == null) {
+            throw new IllegalArgumentException("존재하지 않는 테이블입니다. 다시 입력해주세요.");
+        }
+
+        if (table.availableTables()) {
+            throw new IllegalStateException("이미 주문을 받은 테이블입니다. 다른 테이블을 선택해주세요.");
+        }
+
+        int tableCapacity = table.getCapacity();
+        if (quantity > tableCapacity) {
+            throw new IllegalArgumentException("테이블 수용 인원인 " + tableCapacity + "명을 초과하였습니다. 다른 테이블을 선택해주세요.");
+        }
+
+        Order order = new Order(orderMenu.getName(), orderMenu.getPrice(), quantity);
+        table.addOrder(order);
+    }
+
+    
+    // 체크아웃하기
+    public boolean checkOutTable(String tableName) {
+        Table checkoutTable = getTable(tableName);
+
+        if (checkoutTable == null) {
+            throw new IllegalArgumentException("존재하지 않는 테이블입니다. 다시 입력해주세요.");
+        }
+
+        checkoutTable.clearOrderList();
+        return true;
+    }
+
 
     public ArrayList<Menu> getMenuList() {
         return new ArrayList<>(menuList);

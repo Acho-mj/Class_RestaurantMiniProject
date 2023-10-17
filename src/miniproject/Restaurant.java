@@ -1,64 +1,53 @@
 package miniproject;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
 
-public class Restaurant{
-    private Menu[] menuList;
-    private Table[] tableList;
+public class Restaurant {
+    private ArrayList<Menu> menuList;
+    private ArrayList<Table> tableList;
 
-    private int menuCount;
-    private int tableCount;
-        
     public Restaurant() {
-    	menuList = new Menu[100]; 
-        tableList = new Table[100];
-        menuCount = 0;
-        tableCount = 0;
+        menuList = new ArrayList<>();
+        tableList = new ArrayList<>();
     }
-
-    // 메뉴 추가 
-    public void addMenu(String name, double price) {
-        // 배열 크기가 부족한 경우, 현재 크기의 2배인 새로운 배열을 생성
-        if (menuCount >= menuList.length) {
-            int newCapacity = menuList.length * 2;
-            Menu[] newMenuList = new Menu[newCapacity];
-            
-            // 기존 데이터를 새 배열로 복사
-            for (int i = 0; i < menuCount; i++) {
-                newMenuList[i] = menuList[i];
-            }
-            
-            // 새 배열을 기존 배열로 교체
-            menuList = newMenuList;
-            // 새 메뉴 추가
-            Menu menu = new Menu(name, price);
-            menuList[menuCount] = menu;
-            menuCount++;
-        }   
-    }
-
     
-    // 메뉴 삭제 
-    public boolean deleteMenu(String name) {
-        for (int i = 0; i < menuCount; i++) {
-            Menu menu = menuList[i];
-            if (menu.getName().equals(name)) {
-                // 해당 인덱스 이후의 메뉴들을 한 칸씩 앞으로 당김
-                for (int j = i; j < menuCount - 1; j++) {
-                    menuList[j] = menuList[j + 1];
-                }
-                menuList[menuCount - 1] = null; // 마지막 인덱스 null로 초기화
-                menuCount--;
-                return true;
-            }
+    public Restaurant(File file) throws Exception {
+        try (DataInputStream dis = new DataInputStream(new FileInputStream(file))) {
+            loadFile(dis); // 파일에서 데이터를 읽는 메서드 호출
+        } catch (IOException e) {
+            System.err.println("파일에서 데이터를 읽어오는 중 오류 발생: " + e.getMessage());
+            e.printStackTrace();
         }
-        return false;
     }
-    
+
+    // 메뉴 추가
+    public void addMenu(String name, double price) {
+    	// 이미 존재하는 메뉴인지 확인
+        if (getMenu(name) != null) {
+            throw new IllegalArgumentException("이미 존재하는 메뉴 이름입니다. 다른 이름을 입력해주세요.");
+        }
+        Menu menu = new Menu(name, price);
+        menuList.add(menu);
+    }
+
+    // 메뉴 삭제
+    public void deleteMenu(String deleteMenuName) {
+        Menu menuToDelete = getMenu(deleteMenuName);
+
+        if (menuToDelete == null) {
+            throw new IllegalArgumentException("존재하지 않는 메뉴 이름입니다. 다른 이름을 입력해주세요.");
+        }
+
+        if (!menuList.remove(menuToDelete)) {
+            throw new IllegalStateException("메뉴 삭제에 실패했습니다.");
+        }
+    }
+
+
+    // 메뉴 가져오기
     public Menu getMenu(String name) {
-        for (int i = 0; i < menuCount; i++) {
-            Menu menu = menuList[i];
+        for (Menu menu : menuList) {
             if (menu.getName().equals(name)) {
                 return menu;
             }
@@ -66,48 +55,44 @@ public class Restaurant{
         return null;
     }
 
-
     // 테이블 추가
     public void addTable(String tableName, int capacity) {
-        // 배열 크기가 부족한 경우, 현재 크기의 2배인 새로운 배열을 생성
-        if (tableCount >= tableList.length) {
-            int newCapacity = tableList.length * 2;
-            Table[] newTableList = new Table[newCapacity];
-            
-            // 기존 데이터를 새 배열로 복사
-            for (int i = 0; i < tableCount; i++) {
-                newTableList[i] = tableList[i];
-            }
-            
-            // 새 배열을 기존 배열로 교체
-            tableList = newTableList;
+    	Table existingTable = getTable(tableName);
+        if (existingTable != null) {
+            throw new IllegalArgumentException("이미 존재하는 테이블입니다. 다시 입력해주세요.");
         }
-        
-        // 새 테이블 추가
-        Table table = new Table(tableName, capacity);
-        tableList[tableCount] = table;
-        tableCount++;
+
+        Table newTable = new Table(tableName, capacity);
+        tableList.add(newTable);
     }
 
-    public boolean deleteTable(String name) {
-        for (int i = 0; i < tableCount; i++) {
-            Table table = tableList[i];
-            if (table.getTableName().equals(name)) {
-                // 해당 인덱스 이후의 테이블들을 한 칸씩 앞으로 당김
-                for (int j = i; j < tableCount - 1; j++) {
-                    tableList[j] = tableList[j + 1];
-                }
-                tableList[tableCount - 1] = null; // 마지막 인덱스 null로 초기화
-                tableCount--;
-                return true;
+    // 테이블 삭제
+    public void deleteTable(String removeTableName) {
+        Table tableToRemove = getTable(removeTableName);
+
+        if (tableToRemove == null) {
+            throw new IllegalArgumentException("존재하지 않는 테이블 이름입니다. 다른 이름을 입력해주세요.");
+        }
+
+        if (!tableList.remove(tableToRemove)) {
+            throw new IllegalStateException("테이블 삭제에 실패했습니다.");
+        }
+    }
+
+
+    // 테이블 가져오기
+    public Table getTable(String tableName) {
+        for (Table table : tableList) {
+            if (table.getTableName().equals(tableName)) {
+                return table;
             }
         }
-        return false;
+        return null;
     }
-    
-    public Table getTable(String tableName) {
-        for (int i = 0; i < tableCount; i++) {
-            Table table = tableList[i];
+
+    // 테이블 이름으로 테이블 찾기
+    public Table findTableByName(String tableName) {
+        for (Table table : tableList) {
             if (table.getTableName().equals(tableName)) {
                 return table;
             }
@@ -115,93 +100,93 @@ public class Restaurant{
         return null;
     }
     
-    // 테이블 이름으로 테이블을 찾아 반환
-    public Table findTableByName(String tableName) {
-        for (Table table : tableList) {
-            if (table != null && table.getTableName().equals(tableName)) {
-                return table;
-            }
-        }
-        return null;
-    }
     
+    // 주문하기
+    public void takeOrder(Table table, Menu orderMenu, int quantity) {
+        if (table == null) {
+            throw new IllegalArgumentException("존재하지 않는 테이블입니다. 다시 입력해주세요.");
+        }
 
-    public Menu[] getMenuList() {
-        return menuList;
+        if (table.availableTables()) {
+            throw new IllegalStateException("이미 주문을 받은 테이블입니다. 다른 테이블을 선택해주세요.");
+        }
+
+        int tableCapacity = table.getCapacity();
+        if (quantity > tableCapacity) {
+            throw new IllegalArgumentException("테이블 수용 인원인 " + tableCapacity + "명을 초과하였습니다. 다른 테이블을 선택해주세요.");
+        }
+
+        Order order = new Order(orderMenu.getName(), orderMenu.getPrice(), quantity);
+        table.addOrder(order);
     }
 
-    public Table[] getTableList() {
-        return tableList;
+    
+    // 체크아웃하기
+    public boolean checkOutTable(String tableName) {
+        Table checkoutTable = getTable(tableName);
+
+        if (checkoutTable == null) {
+            throw new IllegalArgumentException("존재하지 않는 테이블입니다. 다시 입력해주세요.");
+        }
+
+        checkoutTable.clearOrderList();
+        return true;
     }
+
+
+    public ArrayList<Menu> getMenuList() {
+        return new ArrayList<>(menuList);
+    }
+
+    public ArrayList<Table> getTableList() {
+        return new ArrayList<>(tableList);
+    }
+
     
     // 객체를 파일로 출력
-    public void saveFile(String filename) {
-        try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(filename))) {
-            // 메뉴 목록 저장
-            dos.writeInt(menuCount);
-            for (int i = 0; i < menuCount; i++) {
-                menuList[i].saveMenu(dos);
-            }
-
-            // 테이블 목록 저장
-            dos.writeInt(tableCount);
-            for (int i = 0; i < tableCount; i++) {
-                tableList[i].saveTable(dos);
-            }
-
-            // 주문 목록 저장
-            for (int i = 0; i < tableCount; i++) {
-                Table table = tableList[i];
-                if (table != null && table.getOrderCount() > 0) {
-                    table.saveOrderList(dos);
-                }
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void saveFile(DataOutputStream dos) throws Exception{
+        // 메뉴 목록 저장
+        dos.writeInt(menuList.size());
+        for (Menu menu : menuList) {
+        	menu.saveMenu(dos);
         }
+
+        // 테이블 목록 저장
+        dos.writeInt(tableList.size()); 
+        for (Table table : tableList) {
+             table.saveTable(dos);
+        }
+        
     }
 
     // 파일에서 객체로 읽어오기
-    public void loadFile(String filename) {
-        try (DataInputStream dis = new DataInputStream(new FileInputStream(filename))) {
-            int loadedMenuCount = dis.readInt();
-            menuCount = loadedMenuCount;
+    public void loadFile(DataInputStream dis) throws Exception{
+    	menuList = new ArrayList<Menu>();
+        tableList = new ArrayList<Table>();
+    	
+    	try {
+            int menuCount = dis.readInt();
 
-            // 메뉴 객체들을 다시 배열에 저장
-            menuList = new Menu[loadedMenuCount];
-            for (int i = 0; i < loadedMenuCount; i++) {
-                menuList[i] = Menu.loadMenu(dis);
+            // 메뉴 객체들을 다시 ArrayList에 저장
+            menuList.clear();
+            for (int i = 0; i < menuCount; i++) {
+                Menu menu = new Menu();
+                menu.loadMenu(dis);
+                menuList.add(menu);
             }
 
-            int loadedTableCount = dis.readInt();
-            tableCount = loadedTableCount;
+            int tableCount = dis.readInt();
 
-            // 테이블 객체들을 다시 배열에 저장
-            tableList = new Table[loadedTableCount];
-            for (int i = 0; i < loadedTableCount; i++) {
-                tableList[i] = Table.loadTable(dis, this);
-            }
-
-            // 주문 목록 읽어오기
+            // 테이블 객체들을 다시 ArrayList에 저장
+            tableList.clear();
             for (int i = 0; i < tableCount; i++) {
-                int orderCount = dis.readInt(); // 주문 수량 읽어오기
-                Table table = tableList[i];
-                if (table != null) {
-                    for (int j = 0; j < orderCount; j++) {
-                        Order order = Order.loadOrder(dis);
-                        table.addOrder(order); // 주문을 테이블의 주문 목록에 추가
-                    }
-                }
+                Table table = new Table();
+                table.loadTable(dis);
+                tableList.add(table);
             }
         } catch (EOFException e) {
-            // EOFException 처리
-            System.out.println("파일의 끝에 도달했습니다.");
-        } catch (FileNotFoundException e) {
-            // 파일이 존재하지 않는 경우에 대한 예외 처리
-            System.out.println("데이터 파일이 존재하지 않습니다.");
-        } catch (IOException e) {
-            e.printStackTrace();
+            // EOFException 발생 시, 파일의 끝에 도달한 것으로 처리
+            System.out.println("파일의 끝에 도달하였습니다.");
         }
     }
 
@@ -209,30 +194,22 @@ public class Restaurant{
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("\n==== 메뉴 목록 ====\n");
-        for (Menu menu : getMenuList()) {
-            if (menu != null) { // null 체크
-                sb.append("메뉴 이름: ").append(menu.getName()).append(", 가격: ").append(menu.getPrice()).append("원\n");
-            }
+        for (Menu menu : menuList) {
+            sb.append("메뉴 이름: ").append(menu.getName()).append(", 가격: ").append(menu.getPrice()).append("원\n");
         }
         sb.append("\n==== 테이블 목록 ==== \n");
-        for (Table table : getTableList()) {
-            if (table != null) { // null 체크
-                sb.append(table.getTableName()).append(" (수용인원: ").append(table.getCapacity()).append(")\n");
+        for (Table table : tableList) {
+            sb.append(table.getTableName()).append(" (수용인원: ").append(table.getCapacity()).append(")\n");
 
-                // 테이블 주문 목록 표시
-                Order[] orders = table.getOrderList();
-                double totalPay = table.totalPay();
-                if (orders != null) {
-                    sb.append("   <주문 목록>\n");
-                    for (Order order : orders) {
-                        if (order != null) {
-                            sb.append("    → ").append(order.getMenu().getName()).append(" x")
-                            .append(order.getQuantity()).append(": " + order.getMenu().getPrice() * order.getQuantity()+"원").append("\n");
-                        }
-                    }
-                    sb.append("    총 주문 금액: ").append(totalPay + "원\n").append("\n");
-                }
+            // 테이블 주문 목록 표시
+            ArrayList<Order> orders = table.getOrderList();
+            double totalPay = table.totalPay();
+            sb.append("   <주문 목록>\n");
+            for (Order order : orders) {
+                sb.append("    → ").append(order.getMenu().getName()).append(" x")
+                        .append(order.getQuantity()).append(": " + order.pay() + "원").append("\n");
             }
+            sb.append("    총 주문 금액: ").append(totalPay + "원\n").append("\n");
         }
         return sb.toString();
     }

@@ -10,6 +10,10 @@ class Order extends Menu {
         this.quantity = quantity;
     }
     
+    public Order() {
+        // 기본 생성자
+    }
+    
     public Menu getMenu() {
         return this;
     }
@@ -28,17 +32,17 @@ class Order extends Menu {
     }
     
     // Order 객체를 파일로 저장
-    public void saveOrder(DataOutputStream dos) throws IOException {
+    public void saveOrder(DataOutputStream dos) throws Exception {
         dos.writeUTF(getName()); // 메뉴 이름 저장
         dos.writeDouble(getPrice()); // 메뉴 가격 저장
         dos.writeInt(quantity); // 수량 저장
     }
 
     // 파일에서 Order 객체를 읽어오기
-    public static Order loadOrder(DataInputStream dis) throws IOException {
-        String name = dis.readUTF(); // 메뉴 이름 읽어오기
-        double price = dis.readDouble(); // 메뉴 가격 읽어오기
-        int quantity = dis.readInt(); // 수량 읽어오기
-        return new Order(name, price, quantity);
+    public void loadOrder(DataInputStream dis) throws Exception {
+        name = dis.readUTF(); // 메뉴 이름 읽어오기
+        price = dis.readDouble(); // 메뉴 가격 읽어오기
+        quantity = dis.readInt(); // 수량 읽어오기
     }
+    
 }

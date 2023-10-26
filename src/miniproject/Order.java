@@ -2,7 +2,7 @@ package miniproject;
 
 import java.io.*;
 
-class Order extends Menu {
+class Order extends Menu implements Serializable{
     private int quantity;
 
     public Order(String name, double price, int quantity) {

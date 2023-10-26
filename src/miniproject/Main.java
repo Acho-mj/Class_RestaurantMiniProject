@@ -6,8 +6,7 @@ import java.io.*;
 public class Main {
 	public static void main(String[] args) {
 		Scanner fileScan = new Scanner(System.in);
-	    Restaurant restaurant = null;
-	    DataInputStream in = null;
+		Restaurant restaurant = new Restaurant();
 	    String fileName = "restaurant.dat";
 	    File file = new File(fileName);
 
@@ -30,9 +29,9 @@ public class Main {
                         return;
                     }
                 }
+            }else {
+                restaurant = restaurant.loadData(); // 파일이 존재하면 데이터 불러오기
             }
-            // 파일이 존재할 경우 데이터 불러오기
-            restaurant = new Restaurant(file);
         } catch (Exception e) {
             System.out.println("파일 불러오기 또는 생성 중 오류가 발생했습니다.");
             e.printStackTrace();
@@ -48,7 +47,7 @@ public class Main {
             System.out.println("3. 주문하기");
             System.out.println("4. 주문 목록 보기");
             System.out.println("5. 체크아웃하기");
-            System.out.println("6. 데이터 저장 및 불러오기");
+            System.out.println("6. 데이터 저장하기");
             System.out.println("0. 종료");
             System.out.print("원하는 작업을 선택하세요: ");
             int choice = sc.nextInt();
@@ -298,13 +297,7 @@ public class Main {
                     switch (dataChoice) {
                         // 현재 데이터 저장하기
                         case 1:
-                        	try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(fileName))) {
-                                restaurant.saveFile(dos); // 데이터를 파일에 저장
-                                System.out.println("데이터 저장이 완료되었습니다.");
-                            } catch (Exception e) {
-                                System.out.println("파일 저장에 오류가 발생했습니다.");
-                                e.printStackTrace();
-                            }
+                        	restaurant.saveData(restaurant);
                             break;
 
                         case 0:

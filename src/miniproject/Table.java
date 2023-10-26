@@ -3,7 +3,7 @@ package miniproject;
 import java.io.*;
 import java.util.ArrayList;
 
-class Table {
+class Table implements Serializable{
 	private String tableName;
     private int capacity;
     private ArrayList<Order> orderList; // 주문 목록을 ArrayList로 변경

@@ -3,7 +3,7 @@ package miniproject;
 import java.io.*;
 import java.util.ArrayList;
 
-public class Restaurant {
+public class Restaurant implements Serializable{
     private ArrayList<Menu> menuList;
     private ArrayList<Table> tableList;
 
@@ -13,11 +13,16 @@ public class Restaurant {
     }
     
     public Restaurant(File file) throws Exception {
-        try (DataInputStream dis = new DataInputStream(new FileInputStream(file))) {
-            loadFile(dis); // 파일에서 데이터를 읽는 메서드 호출
-        } catch (IOException e) {
-            System.err.println("파일에서 데이터를 읽어오는 중 오류 발생: " + e.getMessage());
-            e.printStackTrace();
+    	if (file.exists()) {
+            try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(file))) {
+                Restaurant deserializedRestaurant = (Restaurant) inputStream.readObject();
+                // 복원된 객체를 현재 객체로 설정
+                this.menuList = deserializedRestaurant.menuList;
+                this.tableList = deserializedRestaurant.tableList;
+            } catch (IOException | ClassNotFoundException e) {
+                System.err.println("파일에서 데이터를 읽어오는 중 오류 발생: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 
@@ -189,6 +194,29 @@ public class Restaurant {
             System.out.println("파일의 끝에 도달하였습니다.");
         }
     }
+    
+    // 객체 직렬화 -> 데이터 저장하기 
+ 	public void saveData(Restaurant restaurant) {
+         try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("restaurant.dat"))) {
+             outputStream.writeObject(restaurant); // 레스토랑 객체를 직렬화하여 파일에 저장
+             
+         } catch (IOException e) {
+        	 e.printStackTrace();
+        
+         }
+     }
+ 	
+ 	// 객체 역직렬화 -> 데이터 불러오기
+ 	public Restaurant loadData() {
+ 	    try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream("restaurant.dat"))) {
+ 	        Restaurant deserializedRestaurant = (Restaurant) inputStream.readObject(); 
+ 	        
+ 	        return deserializedRestaurant;
+ 	    } catch (IOException | ClassNotFoundException e) {
+ 	        System.out.println(e.getMessage());
+ 	        return null; 
+ 	    }
+ 	}
 
     @Override
     public String toString() {

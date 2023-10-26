@@ -2,7 +2,7 @@ package miniproject;
 
 import java.io.*;
 
-class Menu{
+class Menu implements Serializable{
     public String name;
     public double price;
 

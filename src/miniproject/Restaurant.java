@@ -6,26 +6,17 @@ import java.util.ArrayList;
 public class Restaurant implements Serializable{
     private ArrayList<Menu> menuList;
     private ArrayList<Table> tableList;
+    private String fileName;
 
     public Restaurant() {
         menuList = new ArrayList<>();
         tableList = new ArrayList<>();
     }
     
-    public Restaurant(File file) throws Exception {
-    	if (file.exists()) {
-            try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(file))) {
-                Restaurant deserializedRestaurant = (Restaurant) inputStream.readObject();
-                // 복원된 객체를 현재 객체로 설정
-                this.menuList = deserializedRestaurant.menuList;
-                this.tableList = deserializedRestaurant.tableList;
-            } catch (IOException | ClassNotFoundException e) {
-                System.err.println("파일에서 데이터를 읽어오는 중 오류 발생: " + e.getMessage());
-                e.printStackTrace();
-            }
-        }
+    public Restaurant(String fileName) {
+        this.fileName = fileName;
     }
-
+ 
     // 메뉴 추가
     public void addMenu(String name, double price) {
     	// 이미 존재하는 메뉴인지 확인
@@ -196,10 +187,9 @@ public class Restaurant implements Serializable{
     }
     
     // 객체 직렬화 -> 데이터 저장하기 
- 	public void saveData(Restaurant restaurant) {
-         try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream("restaurant.dat"))) {
-             outputStream.writeObject(restaurant); // 레스토랑 객체를 직렬화하여 파일에 저장
-             
+ 	public void saveData(File file) {
+         try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(file))) {
+             outputStream.writeObject(this); // 레스토랑 객체를 직렬화하여 파일에 저장
          } catch (IOException e) {
         	 e.printStackTrace();
         
@@ -207,10 +197,9 @@ public class Restaurant implements Serializable{
      }
  	
  	// 객체 역직렬화 -> 데이터 불러오기
- 	public Restaurant loadData() {
- 	    try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream("restaurant.dat"))) {
+ 	public Restaurant loadData(File file) throws IOException{
+ 	    try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(file))) {
  	        Restaurant deserializedRestaurant = (Restaurant) inputStream.readObject(); 
- 	        
  	        return deserializedRestaurant;
  	    } catch (IOException | ClassNotFoundException e) {
  	        System.out.println(e.getMessage());

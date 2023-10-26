@@ -6,35 +6,28 @@ import java.io.*;
 public class Main {
 	public static void main(String[] args) {
 		Scanner fileScan = new Scanner(System.in);
-		Restaurant restaurant = new Restaurant();
-	    String fileName = "restaurant.dat";
-	    File file = new File(fileName);
+		String fileName = "restaurant.dat";
+		File file = new File(fileName);
+        Restaurant restaurant = new Restaurant();
+
 
         try {
-            if (!file.exists()) {
-                // 파일이 존재하지 않을 경우, 사용자에게 생성 여부 묻기
+            if (file.exists()) {
+            	restaurant = restaurant.loadData(file); // 파일 데이터 불러오기
+            } else {
                 System.out.print("파일이 존재하지 않습니다. 최초 수행인가요? (Y/N): ");
                 String createFileChoice = fileScan.nextLine().trim();
 
-                if (createFileChoice.equalsIgnoreCase("N")) {
+                if (createFileChoice.equalsIgnoreCase("Y")) {
+                    restaurant = new Restaurant();
+                } else {
                     System.out.println("파일이 없음. 프로그램을 종료합니다.");
                     fileScan.close();
                     return;
-                } else if (createFileChoice.equalsIgnoreCase("Y")) {
-                    if (file.createNewFile()) {
-                        System.out.println("파일이 생성되었습니다.");
-                    } else {
-                        System.out.println("파일 생성 중 오류가 발생했습니다.");
-                        fileScan.close();
-                        return;
-                    }
                 }
-            }else {
-                restaurant = restaurant.loadData(); // 파일이 존재하면 데이터 불러오기
             }
         } catch (Exception e) {
-            System.out.println("파일 불러오기 또는 생성 중 오류가 발생했습니다.");
-            e.printStackTrace();
+            System.err.println("파일 불러오기 또는 생성 중 오류가 발생했습니다: " + e.getMessage());
         }
 		
         Scanner sc = new Scanner(System.in);
@@ -297,7 +290,7 @@ public class Main {
                     switch (dataChoice) {
                         // 현재 데이터 저장하기
                         case 1:
-                        	restaurant.saveData(restaurant);
+                        	restaurant.saveData(file);
                             break;
 
                         case 0:

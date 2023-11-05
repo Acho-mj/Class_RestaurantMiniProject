@@ -22,6 +22,10 @@ class Menu implements Serializable{
         return price;
     }
     
+    public void setPrice(double price) {
+        this.price = price; // setPrice 메서드로 메뉴 가격을 수정
+    }
+    
     // Menu 객체를 파일로 저장
     public void saveMenu(DataOutputStream dos) throws Exception {
         dos.writeUTF(name); // 메뉴 이름 저장

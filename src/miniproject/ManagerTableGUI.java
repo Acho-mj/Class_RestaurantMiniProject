@@ -65,19 +65,15 @@ public class ManagerTableGUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = tableListTable.getSelectedRow();
                 if (selectedRow != -1) {
-                    // Get the selected table's row data
                     String tableName = (String) tableModel.getValueAt(selectedRow, 0);
                     int capacity = (int) tableModel.getValueAt(selectedRow, 1);
                     
-                    // Find the corresponding table in the restaurant's table list
                     for (Table table : restaurant.getTableList()) {
                         if (table.getTableName().equals(tableName) && table.getCapacity() == capacity) {
-                            // Change the table's status to "이용 중" (not available)
                             table.tableCompleted();
                         }
                     }
                     
-                    // Refresh the table display
                     displayAllTables();
                 }
             }

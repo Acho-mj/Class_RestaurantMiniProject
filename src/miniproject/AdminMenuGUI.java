@@ -21,10 +21,12 @@ public class AdminMenuGUI extends JFrame {
         this.restaurant = restaurant;
 
         setTitle("메뉴 관리");
-        setSize(600, 600);
+        setSize(530, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel panel = new JPanel();
         panel.setLayout(null);
+        add(panel);
+        setVisible(true);
 
         // 메뉴 검색 필드
         JLabel searchLabel = new JLabel("메뉴 이름 검색");
@@ -39,15 +41,29 @@ public class AdminMenuGUI extends JFrame {
         JButton searchButton = new JButton("검색");
         searchButton.setBounds(360, 50, 80, 30);
         panel.add(searchButton);
+        
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String keyword = searchField.getText();
+                searchMenu(keyword);
+            }
+        });
 
         // 메뉴 Table
         String[] menuColumnNames = {"메뉴 이름", "메뉴 가격"};
         menuTableModel = new DefaultTableModel(null, menuColumnNames);
         menuTable = new JTable(menuTableModel);
+        menuTable = new JTable(menuTableModel) {
+            public boolean isCellEditable(int row, int column) {
+                return column == 1; // 두 번째 열(가격)만 편집 가능하도록 설정
+            }
+        };
+        
         JScrollPane menuScrollPane = new JScrollPane(menuTable);
         menuScrollPane.setBounds(50, 100, 400, 300);
         panel.add(menuScrollPane);
-
+      
         // 메뉴 이름 필드
         JLabel menuNameLabel = new JLabel("메뉴 이름");
         menuNameLabel.setBounds(60, 420, 100, 30);
@@ -70,45 +86,52 @@ public class AdminMenuGUI extends JFrame {
         JButton addButton = new JButton("메뉴 추가");
         addButton.setBounds(60, 460, 100, 30);
         panel.add(addButton);
-
-        // 메뉴 삭제 버튼
-        JButton deleteButton = new JButton("메뉴 삭제");
-        deleteButton.setBounds(180, 460, 100, 30);
-        panel.add(deleteButton);
-
-        // 데이터 저장 버튼
-        JButton saveDataButton = new JButton("데이터 저장하기");
-        saveDataButton.setBounds(300, 460, 130, 30);
-        panel.add(saveDataButton);
         
-        // 관리자 모드 이동 버튼
-        JButton adminButton = new JButton("관리자 화면으로 이동하기");
-        adminButton.setBounds(120, 500, 250, 30);
-        panel.add(adminButton);
-        
-        // Search Button Listener
-        searchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String keyword = searchField.getText();
-                searchMenu(keyword);
-            }
-        });
-
-        // Add Menu Button Listener
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String menuName = menuNameField.getText();
                 String menuPriceText = menuPriceField.getText();
-                if (!menuName.isEmpty() && !menuPriceText.isEmpty()) {
-                    double menuPrice = Double.parseDouble(menuPriceText);
-                    addMenu(menuName, menuPrice);
+                try {
+                	if (!menuName.isEmpty() && !menuPriceText.isEmpty()) {
+                        double menuPrice = Double.parseDouble(menuPriceText);
+                        addMenu(menuName, menuPrice);
+                    } else {
+                        JOptionPane.showMessageDialog(AdminMenuGUI.this, "메뉴 이름과 메뉴 가격을 입력하세요.");
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(AdminMenuGUI.this, "올바른 메뉴 가격을 입력하세요.");
+                }
+            }
+        });
+        
+        // 메뉴 가격 수정 버튼 
+        JButton editPriceButton = new JButton("메뉴 가격 수정");
+        editPriceButton.setBounds(180, 460, 140, 30);
+        panel.add(editPriceButton);
+        
+        editPriceButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = menuTable.getSelectedRow();
+                if (selectedRow >= 0) {
+                    String newPriceText = menuTable.getValueAt(selectedRow, 1).toString();
+                    String menuName = menuTableModel.getValueAt(selectedRow, 0).toString();
+                    try {
+                        double newPrice = Double.parseDouble(newPriceText);
+                        updateMenuPrice(menuName, newPrice);
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(AdminMenuGUI.this, "올바른 메뉴 가격을 입력하세요.");
+                    }
                 }
             }
         });
 
-        // Delete Menu Button Listener
+        // 메뉴 삭제 버튼
+        JButton deleteButton = new JButton("메뉴 삭제");
+        deleteButton.setBounds(340, 460, 100, 30);
+        panel.add(deleteButton);
+        
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -119,11 +142,45 @@ public class AdminMenuGUI extends JFrame {
             }
         });
 
-        // Load and display all menus
+        // 데이터 저장 버튼
+        JButton saveDataButton = new JButton("데이터 저장하기");
+        saveDataButton.setBounds(50, 500, 130, 30);
+        panel.add(saveDataButton);
+        
+        saveDataButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String fileName = "restaurant.dat";
+                try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName))) {
+                    restaurant.saveData(out);
+                    JOptionPane.showMessageDialog(AdminMenuGUI.this, "데이터가 저장되었습니다.");
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        
+        // 관리자 모드 이동 버튼
+        JButton adminButton = new JButton("관리자 화면으로 이동하기");
+        adminButton.setBounds(230, 500, 230, 30);
+        panel.add(adminButton);
+        
+        adminButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose(); 
+                try {
+                    new AdminGUI(restaurant); 
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        
         displayAllMenus();
 
-        add(panel);
-        setVisible(true);
+        
     }
 
     private void searchMenu(String keyword) {
@@ -146,6 +203,17 @@ public class AdminMenuGUI extends JFrame {
             JOptionPane.showMessageDialog(this, "같은 이름의 메뉴가 이미 존재합니다.");
         }
     }
+    
+    private void updateMenuPrice(String menuName, double newPrice) {
+        Menu menu = restaurant.getMenu(menuName);
+        if (menu != null) {
+            menu.setPrice(newPrice);
+            JOptionPane.showMessageDialog(this, "메뉴 가격이 수정되었습니다.");
+            displayAllMenus();
+        } else {
+            JOptionPane.showMessageDialog(this, "메뉴가 존재하지 않습니다.");
+        }
+    }
 
     private void deleteMenu(String menuName) {
         Menu menu = restaurant.getMenu(menuName);
@@ -164,7 +232,7 @@ public class AdminMenuGUI extends JFrame {
         for (Menu menu : menus) {
             menuTableModel.addRow(new Object[]{menu.getName(), menu.getPrice()});
         }
-    }
+    }   
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {

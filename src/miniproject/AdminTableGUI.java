@@ -25,6 +25,8 @@ public class AdminTableGUI extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         JPanel panel = new JPanel();
         panel.setLayout(null);
+        add(panel);
+        setVisible(true);
         
         // 테이블 검색 필드
         JLabel searchLabel = new JLabel("테이블 이름 검색");
@@ -39,6 +41,14 @@ public class AdminTableGUI extends JFrame {
         JButton searchButton = new JButton("검색");
         searchButton.setBounds(360, 50, 80, 30);
         panel.add(searchButton);
+        
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String keyword = searchField.getText();
+                searchTables(keyword);
+            }
+        });
 
         // 테이블 Table
         String[] tableColumnNames = {"테이블 이름", "수용 인원"};
@@ -47,6 +57,7 @@ public class AdminTableGUI extends JFrame {
         JScrollPane tableScrollPane = new JScrollPane(tableTable);
         tableScrollPane.setBounds(50, 100, 400, 300);
         panel.add(tableScrollPane);
+        tableTable.setDefaultEditor(Object.class, null); // 셸 편집 비활성화
 
 
         // 테이블 이름 필드
@@ -71,45 +82,30 @@ public class AdminTableGUI extends JFrame {
         JButton addButton = new JButton("테이블 추가");
         addButton.setBounds(60, 460, 100, 30);
         panel.add(addButton);
-
-        // 테이블 삭제 버튼
-        JButton deleteButton = new JButton("테이블 삭제");
-        deleteButton.setBounds(180, 460, 100, 30);
-        panel.add(deleteButton);
-
-        // 데이터 저장 버튼
-        JButton saveDataButton = new JButton("데이터 저장하기");
-        saveDataButton.setBounds(300, 460, 130, 30);
-        panel.add(saveDataButton);
         
-        // 관리자 모드 이동 버튼
-        JButton adminButton = new JButton("관리자 화면으로 이동하기");
-        adminButton.setBounds(120, 500, 250, 30);
-        panel.add(adminButton);
-
-        // Search Button Listener
-        searchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String keyword = searchField.getText();
-                searchTables(keyword);
-            }
-        });
-
-        // Add Table Button Listener
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String tableName = tableNameField.getText();
                 String capacityText = capacityField.getText();
-                if (!tableName.isEmpty() && !capacityText.isEmpty()) {
-                    int capacity = Integer.parseInt(capacityText);
-                    addTable(tableName, capacity);
+                try {
+                    if (!tableName.isEmpty() && !capacityText.isEmpty()) {
+                        int capacity = Integer.parseInt(capacityText);
+                        addTable(tableName, capacity);
+                    } else {
+                        JOptionPane.showMessageDialog(AdminTableGUI.this, "테이블 이름과 수용인원을 입력하세요.");
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(AdminTableGUI.this, "올바른 수용인원을 입력하세요.");
                 }
             }
         });
 
-        // Delete Table Button Listener
+        // 테이블 삭제 버튼
+        JButton deleteButton = new JButton("테이블 삭제");
+        deleteButton.setBounds(180, 460, 100, 30);
+        panel.add(deleteButton);
+        
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -120,11 +116,42 @@ public class AdminTableGUI extends JFrame {
             }
         });
 
-        // Load and display all tables
-        displayAllTables();
+        // 데이터 저장 버튼
+        JButton saveDataButton = new JButton("데이터 저장하기");
+        saveDataButton.setBounds(300, 460, 130, 30);
+        panel.add(saveDataButton);
+        
+        saveDataButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String fileName = "restaurant.dat";
+                try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(fileName))) {
+                    restaurant.saveData(out);
+                    JOptionPane.showMessageDialog(AdminTableGUI.this, "데이터가 저장되었습니다.");
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        
+        // 관리자 모드 이동 버튼
+        JButton adminButton = new JButton("관리자 화면으로 이동하기");
+        adminButton.setBounds(120, 500, 250, 30);
+        panel.add(adminButton);
+        
+        adminButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose(); 
+                try {
+                    new AdminGUI(restaurant); 
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
 
-        add(panel);
-        setVisible(true);
+        displayAllTables();
     }
 
     private void searchTables(String keyword) {
@@ -132,8 +159,7 @@ public class AdminTableGUI extends JFrame {
         ArrayList<Table> tables = restaurant.getTableList();
         for (Table table : tables) {
             if (table.getTableName().contains(keyword)) {
-                String isAvailable = table.availableTables() ? "이용 가능" : "이용 불가";
-                tableTableModel.addRow(new Object[]{table.getTableName(), table.getCapacity(), isAvailable});
+                tableTableModel.addRow(new Object[]{table.getTableName(), table.getCapacity()});
             }
         }
     }
@@ -164,8 +190,7 @@ public class AdminTableGUI extends JFrame {
         tableTableModel.setRowCount(0);
         ArrayList<Table> tables = restaurant.getTableList();
         for (Table table : tables) {
-            String isAvailable = table.availableTables() ? "이용 가능" : "이용 불가";
-            tableTableModel.addRow(new Object[]{table.getTableName(), table.getCapacity(), isAvailable});
+            tableTableModel.addRow(new Object[]{table.getTableName(), table.getCapacity()});
         }
     }
 
@@ -179,7 +204,7 @@ public class AdminTableGUI extends JFrame {
 
                 try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
                     restaurant.loadData(in);
-                    new AdminGUI(restaurant);
+                    new AdminTableGUI(restaurant);
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
                 }

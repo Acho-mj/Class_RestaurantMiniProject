@@ -2,6 +2,9 @@ package miniproject;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 
 
 public class ManagerGUI extends JFrame {
@@ -18,6 +21,18 @@ public class ManagerGUI extends JFrame {
         
         JButton adminButton = new JButton("관리자 모드");
         adminButton.setBounds(250, 20, 100, 30);
+        
+        adminButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose(); 
+                try {
+                    new AdminGUI(restaurant); 
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
         
         JButton tableButton = new JButton("테이블 배정");
         tableButton.setBounds(40, 150, 100, 30);

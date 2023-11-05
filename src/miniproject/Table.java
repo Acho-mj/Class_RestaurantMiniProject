@@ -7,11 +7,13 @@ class Table implements Serializable{
 	private String tableName;
     private int capacity;
     private ArrayList<Order> orderList; // 주문 목록을 ArrayList로 변경
+    private boolean isAvailable; // 상태를 나타내는 필드
 
     public Table(String tableName, int capacity) {
         this.tableName = tableName;
         this.capacity = capacity;
         this.orderList = new ArrayList<>(); // ArrayList로 초기화
+        this.isAvailable = true; // 기본적으로 "이용 가능"
     }
     
     public Table() {
@@ -34,12 +36,14 @@ class Table implements Serializable{
         for (Order existingOrder : orderList) {
             if (existingOrder.getMenu().equals(menu)) {
                 existingOrder.setQuantity(existingOrder.getQuantity() + quantity);
+                isAvailable = false; 
                 return;
             }
         }
 
         // 중복된 메뉴가 없는 경우 새로운 주문을 추가
         orderList.add(order);
+        isAvailable = false;
     }
 
     
@@ -56,6 +60,22 @@ class Table implements Serializable{
         orderList = new ArrayList<Order>();
     }
 
+    public boolean isAvailable() {
+        return isAvailable;
+    }
+
+    // 테이블 배정 완료시
+    public void tableCompleted() {
+        isAvailable = false;
+    }
+
+    // 테이블 체크아웃시
+    public void guestDeparted() {
+        // 손님이 떠났을 때 테이블을 "이용 가능" 상태로 변경
+        isAvailable = true;
+    }
+
+    
     public boolean availableTables() {
         return !orderList.isEmpty(); // 주문 목록이 비어있지 않으면 true 반환
     }
@@ -102,6 +122,23 @@ class Table implements Serializable{
         tableName = dis.readUTF(); // 테이블 이름 읽어오기
         capacity = dis.readInt(); // 수용 인원 읽어오기
         loadOrder(dis);
+    }
+    
+    
+    // 테이블 객체 직렬화
+    public void saveTableObject(ObjectOutputStream out) throws IOException {
+    	out.writeObject(this); // 테이블 객체를 직렬화하여 저장
+    	out.writeObject(this.orderList);
+    }
+
+    // 테이블 객체 역직렬화
+    public void loadTableObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    	Table table = (Table) in.readObject(); // 테이블 객체를 역직렬화하여 읽어옴
+    	this.orderList = (ArrayList<Order>) in.readObject();
+        this.tableName = table.tableName;
+        this.capacity = table.capacity;
+        this.orderList = table.orderList;
+        this.isAvailable = table.isAvailable;
     }
     
     // equals함수 재정의

@@ -16,6 +16,9 @@ public class Restaurant implements Serializable{
     public Restaurant(String fileName) {
         this.fileName = fileName;
     }
+    public Restaurant(ObjectInputStream oin) throws Exception {
+		this.loadData(oin);
+	}
  
     // 메뉴 추가
     public void addMenu(String name, double price) {
@@ -187,25 +190,16 @@ public class Restaurant implements Serializable{
     }
     
     // 객체 직렬화 -> 데이터 저장하기 
- 	public void saveData(File file) {
-         try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(file))) {
-             outputStream.writeObject(this); // 레스토랑 객체를 직렬화하여 파일에 저장
-         } catch (IOException e) {
-        	 e.printStackTrace();
-        
-         }
-     }
+ 	public void saveData(ObjectOutputStream out) throws IOException {
+        out.writeObject(this.menuList);
+        out.writeObject(this.tableList);
+    }
  	
  	// 객체 역직렬화 -> 데이터 불러오기
- 	public Restaurant loadData(File file) throws IOException{
- 	    try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(file))) {
- 	        Restaurant deserializedRestaurant = (Restaurant) inputStream.readObject(); 
- 	        return deserializedRestaurant;
- 	    } catch (IOException | ClassNotFoundException e) {
- 	        System.out.println(e.getMessage());
- 	        return null; 
- 	    }
- 	}
+ 	public void loadData(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        this.menuList = (ArrayList<Menu>) in.readObject();
+        this.tableList = (ArrayList<Table>) in.readObject();
+	}	
 
     @Override
     public String toString() {

@@ -45,4 +45,18 @@ class Order extends Menu implements Serializable{
         quantity = dis.readInt(); // 수량 읽어오기
     }
     
+    
+    // 주문 객체 직렬화
+    public void saveOrderObject(ObjectOutputStream out) throws IOException {
+    	out.writeObject(this); // Order 객체를 직렬화하여 저장
+    }
+
+    //주문 객체 역직렬화
+    public void loadOrderObject(ObjectInputStream in) throws IOException, ClassNotFoundException{
+ 	    Order order = (Order) in.readObject();
+ 	    this.name = order.name;
+ 	    this.price = order.price;
+ 	    this.quantity = order.quantity;
+ 	}
+    
 }

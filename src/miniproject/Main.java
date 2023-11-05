@@ -6,14 +6,15 @@ import java.io.*;
 public class Main {
 	public static void main(String[] args) {
 		Scanner fileScan = new Scanner(System.in);
-		String fileName = "restaurant.dat";
-		File file = new File(fileName);
-        Restaurant restaurant = new Restaurant();
+		Restaurant restaurant = null;
+	    ObjectInputStream in = null;
+	    String fileName = "restaurant.dat";
+	    File file = new File(fileName);
 
-
-        try {
+	    try {
             if (file.exists()) {
-            	restaurant = restaurant.loadData(file); // 파일 데이터 불러오기
+            	in = new ObjectInputStream(new FileInputStream(file));
+            	restaurant = new Restaurant(in); // 파일 데이터 불러오기
             } else {
                 System.out.print("파일이 존재하지 않습니다. 최초 수행인가요? (Y/N): ");
                 String createFileChoice = fileScan.nextLine().trim();
@@ -290,8 +291,12 @@ public class Main {
                     switch (dataChoice) {
                         // 현재 데이터 저장하기
                         case 1:
-                        	restaurant.saveData(file);
-                            break;
+                        	try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
+                        		restaurant.saveData(out);	// 데이터들을 파일에 저장
+                        	} catch (Exception e) {
+                        		System.out.println("파일 저장에 오류가 발생했습니다.");
+                        	}
+                        	break;
 
                         case 0:
                             exitDataMenu = true; // 루프 종료 조건 설정

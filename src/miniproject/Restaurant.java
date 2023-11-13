@@ -3,24 +3,23 @@ package miniproject;
 import java.io.*;
 import java.util.ArrayList;
 
-public class Restaurant {
+public class Restaurant implements Serializable{
     private ArrayList<Menu> menuList;
     private ArrayList<Table> tableList;
+    private String fileName;
 
     public Restaurant() {
         menuList = new ArrayList<>();
         tableList = new ArrayList<>();
     }
     
-    public Restaurant(File file) throws Exception {
-        try (DataInputStream dis = new DataInputStream(new FileInputStream(file))) {
-            loadFile(dis); // 파일에서 데이터를 읽는 메서드 호출
-        } catch (IOException e) {
-            System.err.println("파일에서 데이터를 읽어오는 중 오류 발생: " + e.getMessage());
-            e.printStackTrace();
-        }
+    public Restaurant(String fileName) {
+        this.fileName = fileName;
     }
-
+    public Restaurant(ObjectInputStream oin) throws Exception {
+		this.loadData(oin);
+	}
+ 
     // 메뉴 추가
     public void addMenu(String name, double price) {
     	// 이미 존재하는 메뉴인지 확인
@@ -189,6 +188,18 @@ public class Restaurant {
             System.out.println("파일의 끝에 도달하였습니다.");
         }
     }
+    
+    // 객체 직렬화 -> 데이터 저장하기 
+ 	public void saveData(ObjectOutputStream out) throws IOException {
+        out.writeObject(this.menuList);
+        out.writeObject(this.tableList);
+    }
+ 	
+ 	// 객체 역직렬화 -> 데이터 불러오기
+ 	public void loadData(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        this.menuList = (ArrayList<Menu>) in.readObject();
+        this.tableList = (ArrayList<Table>) in.readObject();
+	}	
 
     @Override
     public String toString() {

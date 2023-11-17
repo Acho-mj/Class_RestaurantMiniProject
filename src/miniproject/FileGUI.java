@@ -51,11 +51,10 @@ public class FileGUI {
 
                 try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
                     restaurant.loadData(in);
+                    new FileGUI(restaurant);
                 } catch (IOException | ClassNotFoundException e) {
-                    // 파일이 없어도 예외 처리하고 계속 진행
+                    e.printStackTrace();
                 }
-
-                new FileGUI(restaurant);
             }
         });
     }

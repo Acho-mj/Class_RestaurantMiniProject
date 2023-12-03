@@ -2,7 +2,7 @@ package miniproject;
 
 import java.io.*;
 
-class Menu{
+class Menu implements Serializable{
     public String name;
     public double price;
 
@@ -22,6 +22,10 @@ class Menu{
         return price;
     }
     
+    public void setPrice(double price) {
+        this.price = price; // setPrice 메서드로 메뉴 가격을 수정
+    }
+    
     // Menu 객체를 파일로 저장
     public void saveMenu(DataOutputStream dos) throws Exception {
         dos.writeUTF(name); // 메뉴 이름 저장
@@ -32,6 +36,18 @@ class Menu{
     public void loadMenu(DataInputStream dis) throws Exception {
     	this.name = dis.readUTF(); // 메뉴 이름 읽어오기
     	this.price = dis.readDouble(); // 메뉴 가격 읽어오기
+    }
+    
+    // 메뉴 객체 직렬화
+    public void saveMenuObject(ObjectOutputStream out) throws IOException {
+        out.writeObject(this);
+    }
+
+    // 메뉴 객체 역직렬화
+    public void loadMenuObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    	Menu menu = (Menu) in.readObject(); // 메뉴 객체를 역직렬화하여 읽어옴
+        this.name = menu.name;
+        this.price = menu.price;
     }
     
     // equals함수 재정의

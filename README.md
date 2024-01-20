@@ -1,6 +1,6 @@
 # Class_RestaurantMiniProject
 
-JAVA 프로그래밍 기초 미니 프로젝트
+JAVA 프로그래밍 기초 & 응용 1년 프로젝트
 [ 음식점 관리 시스템 - 기존 음식점의 POS 시스템 기능 ]
 
   - Menu, Restaurant, Table, Order 등의 class 생성 
